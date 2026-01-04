@@ -51,11 +51,25 @@
 
 .value {
     font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    letter-spacing: -0.02em;
+    font-weight: 800;
+    /* Changed from 700 */
+    color: #111827;
+    /* Added */
+    margin: 0.5rem 0 1.5rem 0;
+    /* Changed from margin-bottom: 1.5rem; */
+    letter-spacing: -0.025em;
+    /* Changed from -0.02em */
     position: relative;
     z-index: 10;
+    cursor: pointer;
+    /* Added */
+    transition: opacity 0.2s;
+    /* Added */
+}
+
+.value:hover {
+    /* Added */
+    opacity: 0.8;
 }
 
 .breakdown {

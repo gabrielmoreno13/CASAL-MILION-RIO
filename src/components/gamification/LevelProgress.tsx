@@ -2,6 +2,8 @@
 
 import { useGamification, LEVELS } from '@/contexts/GamificationContext';
 import { Award, Zap, Bell, Info } from 'lucide-react';
+import React from 'react';
+import { LevelDetailsModal } from './LevelDetailsModal';
 import styles from './LevelProgress.module.css';
 
 export function LevelProgress() {
@@ -37,44 +39,56 @@ export function LevelProgress() {
         missingXP = nextLevelTargetXP - totalXP;
     }
 
+    const [showDetails, setShowDetails] = React.useState(false);
+
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <div className={styles.levelInfo}>
-                    <span className={styles.levelBadge}>Level {level}</span>
-                    <span className={styles.levelName}>{currentLevelData.name}</span>
+        <>
+            <div className={styles.container} onClick={() => setShowDetails(true)} style={{ cursor: 'pointer' }}>
+                <div className={styles.header}>
+                    <div className={styles.levelInfo}>
+                        <span className={styles.levelBadge}>Level {level}</span>
+                        <span className={styles.levelName}>{currentLevelData.name}</span>
+                    </div>
+                    <div className={styles.levelBenefits}>
+                        <button className={styles.iconButton} title="Benefícios do Nível">
+                            <Award size={16} />
+                        </button>
+                        <button className={styles.iconButton} title="Notificações">
+                            <Bell size={16} />
+                        </button>
+                    </div>
                 </div>
-                <div className={styles.levelBenefits}>
-                    <button className={styles.iconButton} title="Benefícios do Nível">
-                        <Award size={16} />
-                    </button>
-                    <button className={styles.iconButton} title="Notificações">
-                        <Bell size={16} />
-                    </button>
+
+                <div className={styles.progressBarContainer}>
+                    <div
+                        className={styles.progressBarFill}
+                        style={{ width: `${progressPercent}%` }}
+                    />
                 </div>
-            </div>
 
-            <div className={styles.progressBarContainer}>
-                <div
-                    className={styles.progressBarFill}
-                    style={{ width: `${progressPercent}%` }}
-                />
-            </div>
-
-            <div className={styles.progressText}>
-                <span>
-                    <Zap size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle', color: '#F59E0B' }} />
-                    <span className={styles.highlight}>{totalXP.toLocaleString()}</span> / {requiredXP.toLocaleString()} XP
-                </span>
-                {nextLevelData && (
+                <div className={styles.progressText}>
                     <span>
-                        Faltam <span className={styles.highlight}>{missingXP.toLocaleString()} XP</span> para {nextLevelName}
+                        <Zap size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle', color: '#F59E0B' }} />
+                        <span className={styles.highlight}>{totalXP.toLocaleString()}</span> / {requiredXP.toLocaleString()} XP
                     </span>
-                )}
-                {!nextLevelData && (
-                    <span>Você atingiu o nível máximo! 🚀</span>
-                )}
+                    {nextLevelData && (
+                        <span>
+                            Faltam <span className={styles.highlight}>{missingXP.toLocaleString()} XP</span> para {nextLevelName}
+                        </span>
+                    )}
+                    {!nextLevelData && (
+                        <span>Você atingiu o nível máximo! 🚀</span>
+                    )}
+                </div>
             </div>
-        </div>
+
+            {showDetails && (
+                <LevelDetailsModal
+                    currentLevel={level}
+                    currentXP={totalXP}
+                    onClose={() => setShowDetails(false)}
+                />
+            )}
+        </>
     );
 }

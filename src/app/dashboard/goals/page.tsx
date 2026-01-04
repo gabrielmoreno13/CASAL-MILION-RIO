@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { Header } from '@/components/dashboard/Header';
 import { Target, Trophy, Plus, Wallet } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AddGoalModal } from '@/components/goals/AddGoalModal';
 import styles from './Goals.module.css';
 import { formatCurrency } from '@/lib/utils';
@@ -15,6 +16,20 @@ export default function GoalsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [user, setUser] = useState<any>(null);
+
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (searchParams.get('action') === 'new') {
+            setIsModalOpen(true);
+        }
+    }, [searchParams]);
+
+    const handleClose = () => {
+        setIsModalOpen(false);
+        router.push('/dashboard/goals');
+    };
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => setUser(data.user));
@@ -123,7 +138,7 @@ export default function GoalsPage() {
                 user && (
                     <AddGoalModal
                         isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
+                        onClose={handleClose}
                         onSuccess={() => setRefreshTrigger(prev => prev + 1)}
                         user={user}
                     />

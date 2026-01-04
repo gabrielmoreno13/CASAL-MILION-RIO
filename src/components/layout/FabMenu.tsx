@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Plus, TrendingUp, TrendingDown, Target, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import styles from './FabMenu.module.css';
 
 export function FabMenu() {
@@ -9,10 +10,17 @@ export function FabMenu() {
 
     const toggleOpen = () => setIsOpen(!isOpen);
 
+    const router = useRouter();
+
     const handleAction = (action: string) => {
-        console.log('Action:', action);
         setIsOpen(false);
-        // Implement navigation or modal opening logic here
+        if (action === 'GOAL') {
+            router.push('/dashboard/goals?action=new');
+        } else if (action === 'INCOME') {
+            router.push('/dashboard/wallet?action=new_income');
+        } else if (action === 'EXPENSE') {
+            router.push('/dashboard/wallet?action=new_expense');
+        }
     };
 
     return (

@@ -1,193 +1,57 @@
 // app/page.tsx
-import styles from './page.module.css';
+import { Header } from '@/components/landing/Header';
+import { Hero } from '@/components/landing/Hero';
+import { SocialProof } from '@/components/landing/SocialProof';
+import { Problem } from '@/components/landing/Problem';
+import { Features } from '@/components/landing/Features';
+import { Testimonials } from '@/components/landing/Testimonials';
+import { Pricing } from '@/components/landing/Pricing';
+import { FAQ } from '@/components/landing/FAQ';
+import { Footer } from '@/components/landing/Footer';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { ArrowRight, Play, Shield, Users, PiggyBank, Target, TrendingUp, Sparkles } from 'lucide-react';
 
 export default function LandingPage() {
   return (
-    <div className={styles.landing}>
-      {/* HEADER */}
-      <header className={styles.header}>
-        <div className={styles.logo}>
-          <div className={styles.logoIcon}>
-            <TrendingUp size={18} color="#111827" />
-          </div>
-          <span>Casal Milionário</span>
-        </div>
+    <div className="min-h-screen bg-white">
+      <Header />
 
-        <nav className={styles.nav}>
-          <a href="#features" className={styles.navLink}>Funcionalidades</a>
-          <a href="#method" className={styles.navLink}>O Método</a>
-          <a href="#testimonials" className={styles.navLink}>Casais</a>
-        </nav>
+      <main>
+        <Hero />
+        <SocialProof />
+        <Problem />
+        <Features />
 
-        <div className={styles.headerActions}>
-          <Link href="/login">
-            <button className={styles.btnSecondary}>Entrar</button>
-          </Link>
-          <Link href="/register">
-            <button className={styles.btnPrimary}>
-              Começar Agora
-              <ArrowRight size={16} />
-            </button>
-          </Link>
-        </div>
-      </header>
+        {/* Simulator Teaser / Callout Section */}
+        <section className="py-24 bg-gray-900 text-white overflow-hidden relative">
+          {/* Background elements */}
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/20 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* HERO */}
-      <section className={styles.hero}>
-        <div className={styles.heroContainer}>
-          <div className={styles.heroContent}>
-            <span className={styles.heroBadge}>
-              <Sparkles size={14} />
-              Planejamento Financeiro v2.0
-            </span>
-
-            <h1 className={styles.heroTitle}>
-              Sua riqueza<br />
-              <span className={styles.heroTitleHighlight}>planejada.</span>
-            </h1>
-
-            <p className={styles.heroSubtitle}>
-              O primeiro app focado em construir o <strong>primeiro milhão</strong> do casal através da metodologia de investimento reverso.
+          <div className="container mx-auto px-4 max-w-4xl text-center relative z-10">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              Quando vocês atingirão o <span className="text-emerald-400">Primeiro Milhão?</span>
+            </h2>
+            <p className="text-lg text-gray-300 mb-10 max-w-2xl mx-auto">
+              Use nosso simulador avançado com projeções de juros compostos e aportes mensais para descobrir a data exata da sua liberdade financeira.
             </p>
-
-            <div className={styles.heroButtons}>
+            <div className="flex justify-center">
               <Link href="/register">
-                <button className={styles.btnHeroPrimary}>
-                  Começar Agora
-                  <ArrowRight size={18} />
+                <button className="bg-emerald-500 hover:bg-emerald-400 text-gray-900 px-8 py-4 rounded-full font-bold text-lg transition-all hover:scale-105 flex items-center gap-2">
+                  Simular Agora
+                  <ArrowRight size={20} />
                 </button>
               </Link>
-              <button className={styles.btnHeroSecondary}>
-                <Play size={18} />
-                Ver Demo
-              </button>
-            </div>
-
-            <div className={styles.heroTrust}>
-              <div className={styles.trustItem}>
-                <Shield size={16} className={styles.trustIcon} />
-                <span>Dados Criptografados</span>
-              </div>
-              <div className={styles.trustItem}>
-                <Users size={16} className={styles.trustIcon} />
-                <span>+5.000 Casais</span>
-              </div>
             </div>
           </div>
+        </section>
 
-          {/* DASHBOARD MOCKUP */}
-          <div className={styles.heroVisual}>
-            <div className={styles.dashboardMockup}>
-              <div className={styles.mockupHeader}>
-                <div className={styles.mockupTabs}>
-                  <button className={`${styles.mockupTab} ${styles.active}`}>Overview</button>
-                  <button className={styles.mockupTab}>Analytics</button>
-                  <button className={styles.mockupTab}>Despesas</button>
-                </div>
-                <div className={styles.mockupUser}>
-                  <span className={styles.mockupUserName}>Gabriel & Izadora</span>
-                  <div className={styles.mockupAvatar}></div>
-                </div>
-              </div>
+        <Testimonials />
+        <Pricing />
+        <FAQ />
+      </main>
 
-              {/* Card Insight Verde */}
-              <div className={styles.insightCard}>
-                <div className={styles.insightLabel}>
-                  <Sparkles size={14} />
-                  Account Insights
-                </div>
-                <p className={styles.insightTitle}>
-                  Este mês, vocês economizaram{' '}
-                  <span className={styles.insightHighlight}>R$ 2.340</span> — isso é 15% a mais!
-                </p>
-              </div>
-
-              {/* Título do Painel */}
-              <h2 className={styles.mockupTitle}>Overview Panel</h2>
-
-              {/* Grid de Métricas */}
-              <div className={styles.metricsGrid}>
-                <div className={styles.metricCard}>
-                  <div className={styles.metricLabel}>
-                    <span className={styles.metricDot}></span>
-                    Patrimônio Atual
-                  </div>
-                  <div className={styles.metricValue}>97,22<sup>k</sup></div>
-                  <div className={styles.metricChange}>+14.9% este mês</div>
-                </div>
-                <div className={styles.metricCard}>
-                  <div className={styles.metricLabel}>
-                    <span className={styles.metricDot}></span>
-                    Investido
-                  </div>
-                  <div className={styles.metricValue}>10,12<sup>k</sup></div>
-                  <div className={styles.metricChange}>+1.62k este mês</div>
-                </div>
-              </div>
-
-              {/* Mini Gráfico */}
-              <div className={styles.chartContainer}>
-                <div className={styles.chartBars}>
-                  <div className={styles.chartBar} style={{ height: '40%' }}></div>
-                  <div className={styles.chartBar} style={{ height: '60%' }}></div>
-                  <div className={styles.chartBar} style={{ height: '45%' }}></div>
-                  <div className={styles.chartBar} style={{ height: '80%' }}></div>
-                  <div className={styles.chartBar} style={{ height: '55%' }}></div>
-                  <div className={styles.chartBar} style={{ height: '70%' }}></div>
-                  <div className={styles.chartBar} style={{ height: '90%' }}></div>
-                  <div className={styles.chartBar} style={{ height: '65%' }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section className={styles.features} id="features">
-        <div className={styles.featuresContainer}>
-          <div className={styles.featuresHeader}>
-            <h2 className={styles.featuresTitle}>Por que Casal Milionário?</h2>
-            <p className={styles.featuresSubtitle}>
-              Desenvolvido para casais que querem construir riqueza juntos de forma inteligente.
-            </p>
-          </div>
-
-          <div className={styles.featuresGrid}>
-            <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>
-                <PiggyBank size={24} />
-              </div>
-              <h3 className={styles.featureTitle}>Investimento Primeiro</h3>
-              <p className={styles.featureDescription}>
-                Separe o investimento antes de ver o que sobra para gastar. A metodologia que realmente funciona.
-              </p>
-            </div>
-
-            <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>
-                <Users size={24} />
-              </div>
-              <h3 className={styles.featureTitle}>Conta Conjunta</h3>
-              <p className={styles.featureDescription}>
-                Sincronização em tempo real para os dois. Cada gasto é compartilhado instantaneamente.
-              </p>
-            </div>
-
-            <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>
-                <Target size={24} />
-              </div>
-              <h3 className={styles.featureTitle}>Foco no Milhão</h3>
-              <p className={styles.featureDescription}>
-                Gamificação e projeções realistas para vocês atingirem a liberdade financeira juntos.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Footer />
     </div>
   );
 }
+

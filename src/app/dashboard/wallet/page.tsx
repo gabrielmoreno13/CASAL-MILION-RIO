@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase';
 import { Header } from '@/components/dashboard/Header';
 import { Search, Filter, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 import { CategoryChart } from '@/components/dashboard/CategoryChart'; // Import chart
+import { useRouter, useSearchParams } from 'next/navigation';
+import { AddTransactionModal } from '@/components/wallet/AddTransactionModal';
 import styles from './Wallet.module.css';
 
 export default function WalletPage() {
@@ -15,11 +17,37 @@ export default function WalletPage() {
     const [chartData, setChartData] = useState<{ name: string, value: number }[]>([]);
     const [stats, setStats] = useState({ totalExpense: 0, income: 0 });
 
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [addModalType, setAddModalType] = useState<'EXPENSE' | 'INCOME'>('EXPENSE');
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        const action = searchParams.get('action');
+        if (action === 'new_expense') {
+            setAddModalType('EXPENSE');
+            setIsAddModalOpen(true);
+        } else if (action === 'new_income') {
+            setAddModalType('INCOME');
+            setIsAddModalOpen(true);
+        }
+    }, [searchParams]);
+
+    const handleModalClose = () => {
+        setIsAddModalOpen(false);
+        router.push('/dashboard/wallet');
+    };
+
+
+
     useEffect(() => {
         async function fetchExpenses() {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) return;
+                setUser(user);
+                setUser(user);
 
                 // Get Couple & Income
                 const { data: profile } = await supabase.from('profiles').select('income').eq('id', user.id).single();
@@ -156,6 +184,16 @@ export default function WalletPage() {
                     )}
                 </div>
             </div>
+            {user && (
+                <AddTransactionModal
+                    isOpen={isAddModalOpen}
+                    initialType={addModalType}
+                    onClose={handleModalClose}
+                    onSuccess={() => window.location.reload()} // For MVP simplicity
+                    user={user}
+                />
+            )}
+
         </div>
     );
 }

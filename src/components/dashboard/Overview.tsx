@@ -20,12 +20,14 @@ import { ApprovalModal } from '../couple/ApprovalModal';
 import { DailySpendWidget } from '../investment-first/DailySpendWidget';
 import { InvestmentCalculator } from '../investment-first/InvestmentCalculator';
 import { InsightCard } from '../insights/InsightCard';
+import { TransactionModal } from '../wallet/TransactionModal';
 
 export function DashboardOverview() {
     const supabase = createClient();
     const { pendingApprovals } = useCouple();
     const [selectedApproval, setSelectedApproval] = useState<any>(null);
     const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
+    const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
 
     const [metrics, setMetrics] = useState({
         netWorth: 0,
@@ -159,18 +161,21 @@ export function DashboardOverview() {
                     value={formatCurrency(metrics.invested)}
                     icon={<TrendingUp size={16} />}
                     footer="0% da carteira"
+                    href="/dashboard/investments"
                 />
                 <MetricCard
                     label="Renda Mensal"
                     value={formatCurrency(metrics.monthlyIncome)}
                     icon={<CreditCard size={16} />}
                     footer="Base familiar"
+                    href="/dashboard/wallet"
                 />
                 <MetricCard
                     label="Meta do Milhão"
                     value={formatCurrency(metrics.goal)}
                     icon={<Target size={16} />}
                     footer="Objetivo Final"
+                    href="/dashboard/goals"
                 />
                 <StreakCard />
             </div>
@@ -187,7 +192,12 @@ export function DashboardOverview() {
                 </div>
 
                 <div className={styles.activitySection}>
-                    <h3 className={styles.sectionTitle}>Atividade Recente</h3>
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className={styles.sectionTitle} style={{ marginBottom: 0 }}>Atividade Recente</h3>
+                        <Link href="/dashboard/wallet" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                            Ver tudo
+                        </Link>
+                    </div>
                     {loading ? (
                         <p style={{ color: '#9CA3AF', padding: '1rem' }}>Carregando...</p>
                     ) : recentActivity.length === 0 ? (
@@ -203,7 +213,8 @@ export function DashboardOverview() {
                                     date={new Date(activity.date).toLocaleDateString('pt-BR')}
                                     amount={(activity as any).amount}
                                     logoUrl={(activity as any).logo_url}
-                                    userName="Você" // Mock, needs DB update to store who made the transaction
+                                    userName="Você"
+                                    onClick={() => setSelectedTransaction(activity)}
                                 />
                             ))}
                         </div>
@@ -221,13 +232,23 @@ export function DashboardOverview() {
             {isCalculatorOpen && (
                 <InvestmentCalculator onClose={() => setIsCalculatorOpen(false)} />
             )}
+
+            {selectedTransaction && (
+                <TransactionModal
+                    transaction={selectedTransaction}
+                    onClose={() => setSelectedTransaction(null)}
+                />
+            )}
         </div>
     );
 }
 
-function MetricCard({ label, value, icon, footer }: any) {
-    return (
-        <div className={styles.card}>
+
+import Link from 'next/link';
+
+function MetricCard({ label, value, icon, footer, href, onClick }: any) {
+    const content = (
+        <div className={`${styles.card} hover:transform hover:scale-105 transition-transform duration-200 cursor-pointer`}>
             <div>
                 <div className={styles.cardLabel}>{icon} {label}</div>
                 <div className={styles.cardValue}>{value}</div>
@@ -235,6 +256,12 @@ function MetricCard({ label, value, icon, footer }: any) {
             <div className={styles.cardFooter}>{footer}</div>
         </div>
     );
+
+    if (href) {
+        return <Link href={href} style={{ textDecoration: 'none' }}>{content}</Link>;
+    }
+
+    return <div onClick={onClick}>{content}</div>;
 }
 
 

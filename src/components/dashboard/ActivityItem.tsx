@@ -8,12 +8,13 @@ import styles from './ActivityItem.module.css';
 interface ActivityItemProps {
     title: string;
     date: string;
-    amount: string | number;
+    amount: number;
     logoUrl?: string;
-    userName?: string; // Enhanced feature
+    userName?: string;
+    onClick?: () => void;
 }
 
-export function ActivityItem({ title, date, amount, logoUrl, userName }: ActivityItemProps) {
+export function ActivityItem({ title, date, amount, logoUrl, userName, onClick }: ActivityItemProps) {
     const [imgSrc, setImgSrc] = useState<string | null>(logoUrl?.startsWith('http') ? logoUrl : null);
     const [imgError, setImgError] = useState(false);
     const [liked, setLiked] = useState(false);
@@ -39,7 +40,7 @@ export function ActivityItem({ title, date, amount, logoUrl, userName }: Activit
     const displayAmount = typeof amount === 'number' ? `- ${formatCurrency(amount)}` : amount;
 
     return (
-        <div className={styles.activityItem}>
+        <div className={styles.activityItem} onClick={onClick} style={{ cursor: 'pointer' }}>
             <div className={styles.activityIcon} style={{
                 backgroundColor: imgSrc && !imgError ? 'transparent' : '#F3F4F6',
                 fontSize: imgSrc && !imgError ? 'inherit' : '1.2rem',

@@ -1,7 +1,8 @@
 import { formatCurrency } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
-import { TrendingUp, Wallet, Car, Home, RefreshCw } from 'lucide-react'; // Icons
+import { TrendingUp, Wallet, Car, Home, RefreshCw, ArrowRight } from 'lucide-react'; // Icons
+import Link from 'next/link';
 import styles from './NetWorthCard.module.css';
 import { UpdateBalanceModal } from './UpdateBalanceModal';
 
@@ -86,7 +87,10 @@ export function NetWorthCard() {
     return (
         <div className={styles.card}>
             <div className={styles.header}>
-                <span className={styles.title}>Patrimônio Total</span>
+                <Link href="/dashboard/wallet" className="flex items-center gap-2 hover:text-emerald-600 transition-colors">
+                    <span className={styles.title}>Patrimônio Total</span>
+                    <ArrowRight size={16} className="text-gray-400" />
+                </Link>
                 <button
                     className="text-xs flex items-center gap-1 text-gray-500 hover:text-emerald-600 transition-colors"
                     onClick={() => setIsUpdateModalOpen(true)}
@@ -96,9 +100,9 @@ export function NetWorthCard() {
                 </button>
             </div>
 
-            <div className={styles.value}>
+            <Link href="/dashboard/wallet" className={styles.value} style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
                 {formatCurrency(data.total)}
-            </div>
+            </Link>
 
             <div className={styles.breakdown}>
                 <div>
