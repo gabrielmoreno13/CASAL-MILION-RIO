@@ -1,0 +1,21 @@
+{
+    "name": "Casal Milionário",
+    "short_name": "Casal Milionário",
+    "start_url": "/dashboard",
+    "display": "standalone",
+    "background_color": "#F3F4F6",
+    "theme_color": "#4ADE80",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

@@ -1,0 +1,84 @@
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.75rem;
+    border-radius: 14px;
+    /* Matches new aesthetics */
+    font-weight: 500;
+    font-size: 1rem;
+    font-family: var(--font-outfit);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    gap: 0.5rem;
+    line-height: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.full {
+    width: 100%;
+}
+
+.primary {
+    background: var(--text-primary);
+    /* Dark button like Synetica often uses */
+    color: white;
+}
+
+.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: black;
+}
+
+/* A special "Green" variant for key actions if desired, or we stick to Black for primary */
+.accent {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: var(--primary-glow);
+}
+
+.accent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(74, 222, 128, 0.6);
+    /* Strong glow */
+}
+
+.secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+.secondary:hover {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: var(--text-primary);
+}
+
+.ghost {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.ghost:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.03);
+}
+
+@media (prefers-color-scheme: dark) {
+    .primary {
+        background: white;
+        color: black;
+    }
+
+    .primary:hover {
+        background: #f0f0f0;
+    }
+
+    .secondary {
+        border-color: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+}

@@ -1,0 +1,189 @@
+/* Goals.module.css */
+/* ...Previous styles... */
+.container {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.primaryBtn {
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    color: var(--text-primary);
+    border-radius: 99px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    cursor: pointer;
+}
+
+.mainGoalCard {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    border: 1px solid var(--border-color);
+    margin-bottom: 3rem;
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.iconWrapper {
+    width: 64px;
+    height: 64px;
+    background: #FEF3C7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem auto;
+}
+
+.goalTitle {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.goalSubtitle {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.progressContainer {
+    background: #F9FAFB;
+    padding: 1.5rem;
+    border-radius: 16px;
+}
+
+.progressLabels {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.progressBar {
+    height: 12px;
+    background: #E5E7EB;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%);
+    border-radius: 6px;
+    transition: width 1s ease-out;
+}
+
+.progressText {
+    text-align: right;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.subGoals h3 {
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.placeholders {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Sub Goal Cards */
+.subGoalCard {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+
+.subGoalIcon {
+    width: 40px;
+    height: 40px;
+    background: var(--background-secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.subGoalName {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.subGoalValue {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.miniProgBar {
+    height: 6px;
+    background: #E5E7EB;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.miniProgFill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+.subGoalTarget {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.addCard {
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 180px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.addCard:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(74, 222, 128, 0.05);
+}

@@ -1,0 +1,88 @@
+/* NetWorthCard.module.css */
+.card {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    color: white;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.trend {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    backdrop-filter: blur(4px);
+}
+
+.value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 10;
+}
+
+.breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 1rem;
+    position: relative;
+    z-index: 10;
+}
+
+.breakdownLabel {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-bottom: 0.25rem;
+}
+
+.breakdownValue {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.icon {
+    position: absolute;
+    right: -20px;
+    bottom: -40px;
+    opacity: 0.1;
+    transform: rotate(-15deg);
+}

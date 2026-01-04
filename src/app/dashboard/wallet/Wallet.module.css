@@ -1,0 +1,172 @@
+/* Wallet.module.css */
+.container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.topSection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* On mobile, stack them */
+@media (max-width: 768px) {
+    .topSection {
+        grid-template-columns: 1fr;
+    }
+}
+
+.statsColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.chartColumn {
+    height: 100%;
+}
+
+.statCard {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.statLabel {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.statValue {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.statTrend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.searchBar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    gap: 0.75rem;
+    max-width: 400px;
+}
+
+.searchInput {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.filterBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 1.5rem;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filterBtn:hover {
+    background: var(--background-secondary);
+}
+
+/* Table Card */
+.listCard {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    /* For Rounded Corners */
+    box-shadow: var(--shadow-sm);
+    margin-top: 1rem;
+}
+
+.sectionTitle {
+    padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    text-align: left;
+    padding: 1rem 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.iconBox {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--background-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.badge {
+    background: #F3F4F6;
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #4B5563;
+}

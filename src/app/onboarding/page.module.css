@@ -1,0 +1,176 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-secondary);
+    padding: 2rem;
+}
+
+.wizardCard {
+    width: 100%;
+    max-width: 600px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 3rem;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+}
+
+.progressBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.stepContainer {
+    animation: fadeIn 0.4s ease;
+}
+
+.stepHeader {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.stepTitle {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.stepSubtitle {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+}
+
+.formGrid {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.input {
+    width: 100%;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid #D1D5DB;
+    background: #FFFFFF;
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    transition: all 0.2s;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.currencyInput {
+    font-family: monospace;
+    font-weight: 600;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btnBack {
+    padding: 0.875rem 1.5rem;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btnBack:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.btnNext {
+    padding: 0.875rem 2rem;
+    background: var(--primary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.btnNext:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Custom Radio Cards for Role Selection */
+.radioGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.radioCard {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.radioCard.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    box-shadow: 0 0 0 2px var(--primary);
+}
+
+.radioIcon {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.radioCard.selected .radioIcon {
+    color: var(--primary-hover);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
