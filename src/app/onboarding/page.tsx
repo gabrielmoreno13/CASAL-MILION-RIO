@@ -168,7 +168,7 @@ export default function OnboardingPage() {
                                 <input
                                     type="text"
                                     className={styles.input}
-                                    placeholder="Ex: Gabriel & Maria"
+                                    placeholder="Ex: Gabriel & Izadora"
                                     value={coupleName}
                                     onChange={(e) => setCoupleName(e.target.value)}
                                     autoFocus

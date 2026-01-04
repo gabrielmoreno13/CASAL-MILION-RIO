@@ -1,5 +1,6 @@
 // app/page.tsx
 import styles from './page.module.css';
+import Link from 'next/link';
 import { ArrowRight, Play, Shield, Users, PiggyBank, Target, TrendingUp, Sparkles } from 'lucide-react';
 
 export default function LandingPage() {
@@ -21,15 +22,15 @@ export default function LandingPage() {
         </nav>
 
         <div className={styles.headerActions}>
-          <a href="/login">
+          <Link href="/login">
             <button className={styles.btnSecondary}>Entrar</button>
-          </a>
-          <a href="/register">
+          </Link>
+          <Link href="/register">
             <button className={styles.btnPrimary}>
               Começar Agora
               <ArrowRight size={16} />
             </button>
-          </a>
+          </Link>
         </div>
       </header>
 
@@ -52,10 +53,12 @@ export default function LandingPage() {
             </p>
 
             <div className={styles.heroButtons}>
-              <button className={styles.btnHeroPrimary}>
-                Começar Agora
-                <ArrowRight size={18} />
-              </button>
+              <Link href="/register">
+                <button className={styles.btnHeroPrimary}>
+                  Começar Agora
+                  <ArrowRight size={18} />
+                </button>
+              </Link>
               <button className={styles.btnHeroSecondary}>
                 <Play size={18} />
                 Ver Demo
@@ -84,7 +87,7 @@ export default function LandingPage() {
                   <button className={styles.mockupTab}>Despesas</button>
                 </div>
                 <div className={styles.mockupUser}>
-                  <span className={styles.mockupUserName}>Gabriel & Maria</span>
+                  <span className={styles.mockupUserName}>Gabriel & Izadora</span>
                   <div className={styles.mockupAvatar}></div>
                 </div>
               </div>
