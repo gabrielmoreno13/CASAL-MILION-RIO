@@ -6,6 +6,7 @@ import { Header } from '@/components/dashboard/Header';
 import { Target, Trophy, Plus, Wallet } from 'lucide-react';
 import { AddGoalModal } from '@/components/goals/AddGoalModal';
 import styles from './Goals.module.css';
+import { formatCurrency } from '@/lib/utils';
 
 export default function GoalsPage() {
     const supabase = createClient();
@@ -42,8 +43,7 @@ export default function GoalsPage() {
         fetchGoals();
     }, [refreshTrigger]);
 
-    const formatCurrency = (val: number) =>
-        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
+
 
     // Identify the "Meta do Milhão" (assuming it's the one with the biggest target or specific name, for now simply the first one or logic)
     // For MVP, if multiple goals exist, we can treat the first one as MAIN (Million) and others as secondary.

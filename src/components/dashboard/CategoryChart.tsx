@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/utils';
+
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import styles from './CategoryChart.module.css';
 
@@ -18,8 +20,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
         );
     }
 
-    const formatCurrency = (val: number) =>
-        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+
 
     return (
         <div className={styles.chartContainer}>

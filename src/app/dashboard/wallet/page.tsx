@@ -1,5 +1,6 @@
 'use client';
 
+import { formatCurrency } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { Header } from '@/components/dashboard/Header';
@@ -67,8 +68,7 @@ export default function WalletPage() {
         fetchExpenses();
     }, []);
 
-    const formatCurrency = (val: number) =>
-        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+
 
     return (
         <div className="fade-in">

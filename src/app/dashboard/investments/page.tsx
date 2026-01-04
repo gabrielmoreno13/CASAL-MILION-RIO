@@ -6,6 +6,7 @@ import { Header } from '@/components/dashboard/Header';
 import { Plus, Home, Car, TrendingUp, DollarSign } from 'lucide-react';
 import { AddAssetModal } from '@/components/investments/AddAssetModal';
 import styles from './Investments.module.css';
+import { formatCurrency } from '@/lib/utils';
 
 export default function InvestmentsPage() {
     const supabase = createClient();
@@ -38,8 +39,7 @@ export default function InvestmentsPage() {
         fetchAssets();
     }, [refreshTrigger]);
 
-    const formatCurrency = (val: number) =>
-        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+
 
     const getIcon = (type: string) => {
         switch (type) {

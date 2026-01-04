@@ -5,6 +5,7 @@ import { FireCalculator } from '@/lib/wealth/FireCalculator';
 import { Header } from '@/components/dashboard/Header';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import styles from './Simulator.module.css';
+import { formatCurrency } from '@/lib/utils';
 
 export default function SimulatorPage() {
     // Default States (User edits these via sliders/inputs)
@@ -27,8 +28,7 @@ export default function SimulatorPage() {
         setResult(calculation);
     }, [currentNetWorth, monthlySavings, monthlyExpenses, annualReturn]);
 
-    const formatCurrency = (val: number) =>
-        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--background)' }}>

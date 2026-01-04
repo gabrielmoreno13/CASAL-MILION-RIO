@@ -14,7 +14,9 @@ export default function OnboardingPage() {
     const supabase = createClient();
 
     // Form States
-    const [income, setIncome] = useState('');
+    const [userIncome, setUserIncome] = useState('');
+    const [partnerIncome, setPartnerIncome] = useState('');
+    const [initialBalance, setInitialBalance] = useState(''); // New State
     const [goalDate, setGoalDate] = useState('');
     const [coupleName, setCoupleName] = useState('');
 
@@ -31,17 +33,31 @@ export default function OnboardingPage() {
         checkUser();
     }, []);
 
+    const parseMoney = (val: string) => {
+        // Simple clean up for BRL input
+        const clean = val.replace(/[R$\s.]/g, '').replace(',', '.');
+        return parseFloat(clean) || 0;
+    };
+
     const handleNext = async () => {
         setLoading(true);
         try {
             if (step === 1) {
-                // Save Income
+                // Save Income (Sum of both)
+                const totalIncome = parseMoney(userIncome) + parseMoney(partnerIncome);
+
+                if (totalIncome <= 0) {
+                    // Optional: alert user or allow 0?
+                }
+
                 const { error } = await supabase
                     .from('profiles')
-                    .update({ income: parseFloat(income.replace(/[^0-9.]/g, '')) || 0 })
+                    .update({ income: totalIncome })
                     .eq('id', userId);
 
                 if (error) throw error;
+                setStep(1.5); // Go to "Initial Balance" step
+            } else if (step === 1.5) {
                 setStep(2);
             } else if (step === 2) {
                 setStep(3);
@@ -78,6 +94,18 @@ export default function OnboardingPage() {
 
                 if (goalError) throw goalError;
 
+                // 4. Create Initial Balance Asset if > 0
+                const balanceValue = parseMoney(initialBalance);
+                if (balanceValue > 0) {
+                    await supabase.from('assets').insert({
+                        couple_id: couple.id,
+                        name: 'Saldo Inicial',
+                        type: 'INVESTMENT',
+                        value: balanceValue,
+                        liquidity: 'HIGH'
+                    });
+                }
+
                 // Finish
                 router.push('/dashboard');
             }
@@ -89,8 +117,15 @@ export default function OnboardingPage() {
         }
     };
 
-    const totalSteps = 3;
-    const progress = (step / totalSteps) * 100;
+    const totalSteps = 4; // Increased steps
+    // Adjust progress calculation logic to handle 1.5 step
+    let visualStep = step;
+    if (step > 1) visualStep = step === 1.5 ? 2 : step + 1;
+
+    // Simplification for progress bar: 1 -> 1.5 -> 2 -> 3
+    // Map Steps: 1 => 25%, 1.5 => 50%, 2 => 75%, 3 => 100%
+    const progressMap: any = { 1: 25, 1.5: 50, 2: 75, 3: 100 };
+    const progress = progressMap[step] || 25;
 
     return (
         <div className={styles.container}>
@@ -105,19 +140,56 @@ export default function OnboardingPage() {
                             <div className="flex justify-center mb-4 text-emerald-500">
                                 <DollarSign size={48} />
                             </div>
-                            <h1 className={styles.stepTitle}>Qual sua renda mensal?</h1>
-                            <p className={styles.stepSubtitle}>Para calcularmos quanto tempo falta para o milhão.</p>
+                            <h1 className={styles.stepTitle}>Qual a renda mensal de vocês?</h1>
+                            <p className={styles.stepSubtitle}>Para projetarmos o futuro do casal.</p>
                         </div>
 
                         <div className={styles.formGrid}>
                             <div className={styles.inputGroup}>
-                                <label className={styles.label}>Renda Líquida Mensal (R$)</label>
+                                <label className={styles.label}>Sua Renda Líquida (R$)</label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     className={styles.input}
-                                    placeholder="Ex: 5000"
-                                    value={income}
-                                    onChange={(e) => setIncome(e.target.value)}
+                                    placeholder="Ex: 5000,00"
+                                    value={userIncome}
+                                    onChange={(e) => setUserIncome(e.target.value)}
+                                    autoFocus
+                                />
+                            </div>
+                            <div className={styles.inputGroup}>
+                                <label className={styles.label}>Renda do Cônjuge (R$)</label>
+                                <input
+                                    type="text"
+                                    className={styles.input}
+                                    placeholder="Ex: 5000,00"
+                                    value={partnerIncome}
+                                    onChange={(e) => setPartnerIncome(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Step 1.5: Initial Balance (NEW) */}
+                {step === 1.5 && (
+                    <div className={styles.stepContainer}>
+                        <div className={styles.stepHeader}>
+                            <div className="flex justify-center mb-4 text-emerald-500">
+                                <DollarSign size={48} />
+                            </div>
+                            <h1 className={styles.stepTitle}>Quanto dinheiro vocês têm HOJE?</h1>
+                            <p className={styles.stepSubtitle}>Some contas correntes, poupanças e investimentos.</p>
+                        </div>
+
+                        <div className={styles.formGrid}>
+                            <div className={styles.inputGroup}>
+                                <label className={styles.label}>Total Acumulado (R$)</label>
+                                <input
+                                    type="text"
+                                    className={styles.input}
+                                    placeholder="Ex: 10.000,00"
+                                    value={initialBalance}
+                                    onChange={(e) => setInitialBalance(e.target.value)}
                                     autoFocus
                                 />
                             </div>
@@ -180,8 +252,8 @@ export default function OnboardingPage() {
 
                 {/* Actions */}
                 <div className={styles.actions}>
-                    {step > 1 ? (
-                        <button className={styles.btnBack} onClick={() => setStep(step - 1)} disabled={loading}>
+                    {step !== 1 ? (
+                        <button className={styles.btnBack} onClick={() => setStep(step === 1.5 ? 1 : (step === 2 ? 1.5 : 2))} disabled={loading}>
                             <ArrowLeft size={20} /> Voltar
                         </button>
                     ) : (
@@ -191,7 +263,7 @@ export default function OnboardingPage() {
                     <button className={styles.btnNext} onClick={handleNext} disabled={loading}>
                         {loading ? <Loader2 className="animate-spin" /> : (
                             <>
-                                {step === totalSteps ? 'Finalizar' : 'Continuar'} <ArrowRight size={20} />
+                                {step === 3 ? 'Finalizar' : 'Continuar'} <ArrowRight size={20} />
                             </>
                         )}
                     </button>

@@ -1,9 +1,9 @@
-'use client';
-
+import { formatCurrency } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
-import { TrendingUp, Wallet, Car, Home } from 'lucide-react'; // Icons
+import { TrendingUp, Wallet, Car, Home, RefreshCw } from 'lucide-react'; // Icons
 import styles from './NetWorthCard.module.css';
+import { UpdateBalanceModal } from './UpdateBalanceModal';
 
 export function NetWorthCard() {
     const supabase = createClient();
@@ -13,54 +13,71 @@ export function NetWorthCard() {
         fixed: 0
     });
     const [loading, setLoading] = useState(true);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
-        async function fetchWealthData() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-
-            // 1. Get Couple ID (Assuming single couple for now)
-            const { data: member } = await supabase
-                .from('couple_members')
-                .select('couple_id')
-                .eq('profile_id', user.id)
-                .limit(1)
-                .single();
-
-            if (!member) return;
-
-            // 2. Fetch Goal (Liquid Assets - Mocked as Net Worth Goal for now)
-            // In a real scenario, this should be Sum(Bank Accounts). 
-            // For now we use the 'financial_goals.current_amount' as "Liquid Cash".
-            const { data: goal } = await supabase
-                .from('financial_goals')
-                .select('current_amount')
-                .eq('couple_id', member.couple_id)
-                .single();
-
-            // 3. Fetch Fixed Assets (Real Estate, Vehicles)
-            const { data: assets } = await supabase
-                .from('assets')
-                .select('value, type')
-                .eq('couple_id', member.couple_id);
-
-            const liquid = Number(goal?.current_amount || 0);
-
-            const fixed = assets?.reduce((acc, curr) => acc + Number(curr.value), 0) || 0;
-
-            setData({
-                total: liquid + fixed,
-                liquid,
-                fixed
-            });
-            setLoading(false);
-        }
-
-        fetchWealthData();
+        supabase.auth.getUser().then(({ data }) => setUser(data.user));
     }, []);
 
-    const formatCurrency = (val: number) =>
-        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+    const fetchWealthData = async () => {
+        if (!user) return;
+
+        // 1. Get Couple ID
+        const { data: member } = await supabase
+            .from('couple_members')
+            .select('couple_id')
+            .eq('profile_id', user.id)
+            .limit(1)
+            .single();
+
+        if (!member) return;
+
+        // 2. Fetch All Assets
+        const { data: assets } = await supabase
+            .from('assets')
+            .select('*')
+            .eq('couple_id', member.couple_id);
+
+        if (!assets) {
+            setLoading(false);
+            return;
+        }
+
+        // 3. Calculate Totals
+        // Liquid: Type = INVESTMENT (assuming Cash/Investments) or liquidity = HIGH
+        // Fixed: Type = HOME, VEHICLE, OTHER
+
+        let liquid = 0;
+        let fixed = 0;
+
+        assets.forEach(asset => {
+            const val = Number(asset.value);
+            if (asset.type === 'INVESTMENT' || asset.liquidity === 'HIGH') {
+                liquid += val;
+            } else {
+                fixed += val;
+            }
+        });
+
+        setData({
+            total: liquid + fixed,
+            liquid,
+            fixed
+        });
+        setLoading(false);
+
+        // Update Goal Current Amount to match total Net Worth
+        // This keeps the Goal Progress bar in sync
+        const mainGoalId = (await supabase.from('financial_goals').select('id').eq('couple_id', member.couple_id).limit(1).single()).data?.id;
+        if (mainGoalId) {
+            await supabase.from('financial_goals').update({ current_amount: liquid + fixed }).eq('id', mainGoalId);
+        }
+    };
+
+    useEffect(() => {
+        if (user) fetchWealthData();
+    }, [user]);
 
     if (loading) return <div className={styles.card} style={{ opacity: 0.5 }}>Carregando Patrimônio...</div>;
 
@@ -68,9 +85,13 @@ export function NetWorthCard() {
         <div className={styles.card}>
             <div className={styles.header}>
                 <span className={styles.title}>Patrimônio Total</span>
-                <div className={styles.trend}>
-                    <TrendingUp size={14} /> +0% este mês
-                </div>
+                <button
+                    className="text-xs flex items-center gap-1 text-gray-500 hover:text-emerald-600 transition-colors"
+                    onClick={() => setIsUpdateModalOpen(true)}
+                    title="Atualizar Saldo"
+                >
+                    <RefreshCw size={12} /> Atualizar
+                </button>
             </div>
 
             <div className={styles.value}>
@@ -93,6 +114,15 @@ export function NetWorthCard() {
                     </div>
                 </div>
             </div>
+
+            {user && (
+                <UpdateBalanceModal
+                    isOpen={isUpdateModalOpen}
+                    onClose={() => setIsUpdateModalOpen(false)}
+                    onSuccess={fetchWealthData}
+                    user={user}
+                />
+            )}
         </div>
     );
 }

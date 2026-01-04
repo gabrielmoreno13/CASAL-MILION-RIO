@@ -30,25 +30,41 @@ export function AddAssetModal({ isOpen, onClose, onSuccess, user }: AddAssetModa
 
     if (!isOpen) return null;
 
+    const parseBRL = (value: string) => {
+        // Remove R$, spaces, and dots (thousand separators)
+        const clean = value.replace(/[R$\s.]/g, '');
+        // Replace comma with dot for decimal
+        return parseFloat(clean.replace(',', '.'));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
         try {
             // Get Couple ID
-            const { data: member } = await supabase
+            const { data: member, error: memberError } = await supabase
                 .from('couple_members')
                 .select('couple_id')
                 .eq('profile_id', user.id)
                 .single();
 
-            if (!member) throw new Error('Couple not found');
+            if (memberError || !member) {
+                console.error('Error finding couple:', memberError);
+                throw new Error('Você precisa fazer parte de um casal para adicionar ativos.');
+            }
+
+            const numericValue = parseBRL(amount);
+
+            if (isNaN(numericValue)) {
+                throw new Error('Valor inválido.');
+            }
 
             const { error } = await supabase.from('assets').insert({
                 couple_id: member.couple_id,
                 name,
                 type,
-                value: parseFloat(amount.replace(/[^0-9.]/g, '')),
+                value: numericValue,
                 liquidity: type === 'INVESTMENT' ? 'HIGH' : 'LOW'
             });
 
@@ -59,8 +75,8 @@ export function AddAssetModal({ isOpen, onClose, onSuccess, user }: AddAssetModa
             setName('');
             setAmount('');
         } catch (error: any) {
-            alert('Erro ao salvar ativo');
-            console.error(error);
+            console.error('Full Error:', error);
+            alert(error.message || 'Erro ao salvar ativo');
         } finally {
             setLoading(false);
         }
@@ -103,7 +119,7 @@ export function AddAssetModal({ isOpen, onClose, onSuccess, user }: AddAssetModa
                     <div className={styles.inputGroup}>
                         <label>Valor Atual (R$)</label>
                         <input
-                            type="number"
+                            type="text"
                             required
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}

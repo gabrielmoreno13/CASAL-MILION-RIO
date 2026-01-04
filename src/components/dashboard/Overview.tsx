@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/utils';
+
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { DollarSign, TrendingUp, Target, CreditCard, ShoppingBag, ArrowUpRight } from 'lucide-react';
@@ -74,12 +76,7 @@ export function DashboardOverview() {
         fetchData();
     }, []);
 
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        }).format(value);
-    };
+
 
     const percentToGoal = ((metrics.netWorth / metrics.goal) * 100).toFixed(1);
 
@@ -158,23 +155,47 @@ function MetricCard({ label, value, icon, footer }: any) {
 }
 
 function ActivityItem({ title, date, amount, logoUrl }: any) {
-    // Check if it's a URL (old data) or Emoji (new data)
-    const isUrl = logoUrl?.startsWith('http');
+    // 1. If explicit logoUrl exists (and is http), use it
+    const [imgSrc, setImgSrc] = useState<string | null>(logoUrl?.startsWith('http') ? logoUrl : null);
+    const [imgError, setImgError] = useState(false);
+
+    useEffect(() => {
+        // If no explicit logo, try to guess from title
+        if (!logoUrl?.startsWith('http') && title && !imgError) {
+            // Common services mapping or heuristic
+            const lowerTitle = title.toLowerCase();
+            const services = ['netflix', 'spotify', 'amazon', 'uber', 'ifood', 'apple', 'google', 'nubank', 'inter', 'itaú', 'itau', 'bradesco', 'santander'];
+
+            const match = services.find(s => lowerTitle.includes(s));
+            if (match) {
+                // Special mapping for banks/services if needed, or just domain guess
+                let domain = `${match}.com`;
+                if (match === 'nubank') domain = 'nubank.com.br';
+                if (match === 'inter') domain = 'bancointer.com.br';
+                if (match === 'itaú' || match === 'itau') domain = 'itau.com.br';
+                if (match === 'ifood') domain = 'ifood.com.br';
+
+                setImgSrc(`https://logo.clearbit.com/${domain}`);
+            }
+        }
+    }, [title, logoUrl, imgError]);
 
     return (
         <div className={styles.activityItem}>
             <div className={styles.activityIcon} style={{
-                backgroundColor: isUrl ? 'transparent' : '#F3F4F6',
-                fontSize: isUrl ? 'inherit' : '1.2rem'
+                backgroundColor: imgSrc && !imgError ? 'transparent' : '#F3F4F6',
+                fontSize: imgSrc && !imgError ? 'inherit' : '1.2rem',
+                overflow: 'hidden'
             }}>
-                {logoUrl ? (
-                    isUrl ? (
-                        <img src={logoUrl} alt={title} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                    ) : (
-                        <span>{logoUrl}</span>
-                    )
+                {imgSrc && !imgError ? (
+                    <img
+                        src={imgSrc}
+                        alt={title}
+                        style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                        onError={() => setImgError(true)}
+                    />
                 ) : (
-                    <ShoppingBag size={18} />
+                    <span>{logoUrl && !logoUrl.startsWith('http') ? logoUrl : <ShoppingBag size={18} />}</span>
                 )}
             </div>
             <div className={styles.activityDetails}>

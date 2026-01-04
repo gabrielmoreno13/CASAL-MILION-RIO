@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { LayoutDashboard, Wallet, TrendingUp, Target, Settings, LogOut, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
@@ -38,10 +39,14 @@ export function Sidebar({ user: initialUser }: { user: any }) {
     return (
         <aside className={styles.sidebar}>
             <div className={styles.logo}>
-                <div className={styles.logoIcon}>
-                    <TrendingUp size={20} />
-                </div>
-                <span className={styles.logoText}>Casal Milionário</span>
+                <Image
+                    src="/logo.png"
+                    alt="Casal Milionário"
+                    width={180}
+                    height={50}
+                    className="object-contain" // Tailwind class if needed or keep styles
+                    style={{ maxHeight: '50px', width: 'auto' }}
+                />
             </div>
 
             <nav className={styles.nav}>

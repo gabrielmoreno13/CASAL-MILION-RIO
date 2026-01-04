@@ -6,6 +6,7 @@ import { Header } from '@/components/dashboard/Header';
 import { SubscriptionHunter, SubscriptionCandidate } from '@/lib/wealth/SubscriptionHunter';
 import { Sparkles, Zap, AlertTriangle, Bot } from 'lucide-react';
 import styles from './Insights.module.css';
+import { formatCurrency } from '@/lib/utils';
 
 export default function InsightsPage() {
     const supabase = createClient();
@@ -48,8 +49,7 @@ export default function InsightsPage() {
         fetchData();
     }, []);
 
-    const formatCurrency = (val: number) =>
-        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+
 
     return (
         <div className="fade-in">
