@@ -13,6 +13,8 @@ import {
   Bot
 } from 'lucide-react';
 
+import { FIRECalculator } from '@/components/landing/FIRECalculator';
+
 // --- Components ---
 
 const Navbar = () => (
@@ -591,7 +593,9 @@ export default function LandingPage() {
       <main>
         <Hero />
         <SocialProof />
+
         <Methodology />
+        <FIRECalculator />
         <Features />
         <AdvisorSection />
         <Testimonials />

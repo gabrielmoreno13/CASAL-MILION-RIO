@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { GamificationProvider } from "@/contexts/GamificationContext";
 import { CoupleProvider } from "@/contexts/CoupleContext";
+import { UserProvider } from "@/contexts/UserContext";
 import { FabMenu } from "@/components/layout/FabMenu";
 
 export const metadata: Metadata = {
@@ -23,12 +24,14 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body>
-        <GamificationProvider>
-          <CoupleProvider>
-            {children}
-            <FabMenu />
-          </CoupleProvider>
-        </GamificationProvider>
+        <UserProvider>
+          <GamificationProvider>
+            <CoupleProvider>
+              {children}
+              <FabMenu />
+            </CoupleProvider>
+          </GamificationProvider>
+        </UserProvider>
       </body>
     </html>
   );
