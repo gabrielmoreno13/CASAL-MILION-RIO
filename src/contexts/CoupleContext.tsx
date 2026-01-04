@@ -39,6 +39,8 @@ interface CoupleContextType extends CoupleState {
     requestApproval: (amount: number, category: string, description: string) => Promise<void>;
     respondToApproval: (approvalId: string, status: 'approved' | 'rejected', comment?: string) => Promise<void>;
     refreshCoupleData: () => Promise<void>;
+    inviteSpouse: () => Promise<string | null>;
+    joinCouple: (code: string) => Promise<boolean>;
 }
 
 // --- Context ---
@@ -174,8 +176,113 @@ export function CoupleProvider({ children }: { children: React.ReactNode }) {
         // Re-fetch logic
     };
 
+    const inviteSpouse = async () => {
+        if (!userId) return null;
+
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+        try {
+            // Delete any existing invites for this user to keep it clean
+            await supabase.from('couple_invites').delete().eq('created_by', userId);
+
+            const { error } = await supabase
+                .from('couple_invites')
+                .insert({
+                    created_by: userId,
+                    code: code,
+                    status: 'pending'
+                });
+
+            if (error) throw error;
+            return code;
+        } catch (err) {
+            console.error('Error creating invite:', err);
+            return null;
+        }
+    };
+
+    const joinCouple = async (code: string) => {
+        if (!userId) return false;
+
+        try {
+            // 1. Verify code
+            const { data: invite, error: inviteError } = await supabase
+                .from('couple_invites')
+                .select('*')
+                .eq('code', code.toUpperCase())
+                .single();
+
+            if (inviteError || !invite) throw new Error('Código inválido ou expirado.');
+
+            const partnerId = invite.created_by;
+
+            if (partnerId === userId) throw new Error('Você não pode entrar no seu próprio convite.');
+
+            // 2. Check if partner already has a couple
+            const { data: partnerMember } = await supabase
+                .from('couple_members')
+                .select('couple_id')
+                .eq('profile_id', partnerId)
+                .single();
+
+            let coupleId = partnerMember?.couple_id;
+
+            // 3. Create couple if likely doesn't exist (or partner not in one)
+            if (!coupleId) {
+                const { data: newCouple, error: coupleError } = await supabase
+                    .from('couples')
+                    .insert({ name: 'Casal Milionário' }) // Use a default name, can be changed later
+                    .select()
+                    .single();
+
+                if (coupleError) throw coupleError;
+                coupleId = newCouple.id;
+
+                // Add partner to couple
+                await supabase.from('couple_members').insert({
+                    couple_id: coupleId,
+                    profile_id: partnerId,
+                    role: 'admin'
+                });
+
+                // Update partner profile
+                await supabase.from('profiles').update({ couple_id: coupleId }).eq('id', partnerId);
+            }
+
+            // 4. Add current user to couple
+            const { error: joinError } = await supabase.from('couple_members').insert({
+                couple_id: coupleId,
+                profile_id: userId,
+                role: 'admin' // Both admins for now
+            });
+
+            if (joinError) throw joinError;
+
+            // 5. Update current user profile
+            await supabase.from('profiles').update({ couple_id: coupleId }).eq('id', userId);
+
+            // 6. Migrate Data (Expenses, Investments, Goals)
+            // Update items where user_id is involved to have the couple_id
+            await supabase.from('expenses').update({ couple_id: coupleId }).in('user_id', [userId, partnerId]);
+            await supabase.from('investments').update({ couple_id: coupleId }).in('user_id', [userId, partnerId]);
+            await supabase.from('financial_goals').update({ couple_id: coupleId }).in('couple_id', [userId, partnerId]); // Assuming goals might have been linked to user or holding id? 
+            // Actually goals usually have couple_id. If they were null or user-specific, we update. 
+            // If the schema for goals uses couple_id primarily, we just ensure it's set.
+
+            // 7. Delete logic or mark accepted
+            await supabase.from('couple_invites').update({ status: 'accepted' }).eq('id', invite.id);
+
+            // Reload to refresh context
+            window.location.reload();
+            return true;
+        } catch (err) {
+            console.error('Error joining couple:', err);
+            return false;
+        }
+    };
+
     return (
-        <CoupleContext.Provider value={{ ...state, toggleViewMode, requestApproval, respondToApproval, refreshCoupleData }}>
+        <CoupleContext.Provider value={{ ...state, toggleViewMode, requestApproval, respondToApproval, refreshCoupleData, inviteSpouse, joinCouple }}>
             {children}
         </CoupleContext.Provider>
     );
