@@ -19,7 +19,20 @@ const GOALS: GoalPoint[] = [
     { id: 5, title: 'Primeiro Milhão', date: 'Dez 2032', value: 1000000, achieved: false },
 ];
 
-export function GoalTimeline() {
+interface GoalTimelineProps {
+    goals?: any[];
+    monthlyContribution?: number;
+}
+
+export function GoalTimeline({ goals, monthlyContribution }: GoalTimelineProps) {
+    const displayGoals = goals && goals.length > 0 ? goals.map((g, i) => ({
+        id: g.id || i,
+        title: g.title,
+        date: new Date(g.target_date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }),
+        value: g.target_amount,
+        achieved: g.current_amount >= g.target_amount
+    })) : GOALS;
+
     return (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mt-6">
             <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
@@ -38,7 +51,7 @@ export function GoalTimeline() {
                 />
 
                 <div className="relative flex justify-between">
-                    {GOALS.map((goal, index) => (
+                    {displayGoals.map((goal, index) => (
                         <div key={goal.id} className="flex flex-col items-center group cursor-pointer">
                             {/* Point */}
                             <div
@@ -58,7 +71,7 @@ export function GoalTimeline() {
                                     <Calendar size={10} /> {goal.date}
                                 </span>
                                 <span className="text-emerald-400 font-mono mt-1">
-                                    R$ {(goal.value / 1000)}k
+                                    R$ {(goal.value / 1000).toFixed(0)}k
                                 </span>
                                 {/* Arrow */}
                                 <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45" />

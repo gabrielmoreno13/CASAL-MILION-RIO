@@ -1,7 +1,8 @@
 'use client';
+export const dynamic = 'force-dynamic';
 
 import { formatCurrency } from '@/lib/utils';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { Header } from '@/components/dashboard/Header';
 import { Search, Filter, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
@@ -10,7 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AddTransactionModal } from '@/components/wallet/AddTransactionModal';
 import styles from './Wallet.module.css';
 
-export default function WalletPage() {
+function WalletContent() {
     const supabase = createClient();
     const [expenses, setExpenses] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -40,14 +41,12 @@ export default function WalletPage() {
     };
 
 
-
     useEffect(() => {
         async function fetchExpenses() {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) return;
-                setUser(user);
-                setUser(user);
+
 
                 // Get Couple & Income
                 const { data: profile } = await supabase.from('profiles').select('income').eq('id', user.id).single();
@@ -189,11 +188,18 @@ export default function WalletPage() {
                     isOpen={isAddModalOpen}
                     initialType={addModalType}
                     onClose={handleModalClose}
-                    onSuccess={() => window.location.reload()} // For MVP simplicity
+                    onSuccess={() => window.location.reload()}
                     user={user}
                 />
             )}
-
         </div>
+    );
+}
+
+export default function WalletPage() {
+    return (
+        <Suspense fallback={<div className="p-8 text-center">Carregando carteira...</div>}>
+            <WalletContent />
+        </Suspense>
     );
 }

@@ -1,6 +1,7 @@
 'use client';
+export const dynamic = 'force-dynamic';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { Header } from '@/components/dashboard/Header';
 import { Target, Trophy, Plus, Wallet } from 'lucide-react';
@@ -10,9 +11,10 @@ import styles from './Goals.module.css';
 import { formatCurrency } from '@/lib/utils';
 import { GoalTimeline } from '@/components/projections/GoalTimeline';
 
-export default function GoalsPage() {
+function GoalsContent() {
     const supabase = createClient();
     const [goals, setGoals] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [user, setUser] = useState<any>(null);
@@ -37,113 +39,136 @@ export default function GoalsPage() {
 
     useEffect(() => {
         async function fetchGoals() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            setLoading(true);
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
 
-            // Get Couple ID
-            const { data: member } = await supabase
-                .from('couple_members')
-                .select('couple_id')
-                .eq('profile_id', user.id)
-                .single();
+                // Get Couple ID
+                const { data: member } = await supabase
+                    .from('couple_members')
+                    .select('couple_id')
+                    .eq('profile_id', user.id)
+                    .single();
 
-            if (member) {
-                const { data } = await supabase
-                    .from('financial_goals')
-                    .select('*')
-                    .eq('couple_id', member.couple_id)
-                    .order('created_at', { ascending: true });
-                setGoals(data || []);
+                if (member) {
+                    const { data } = await supabase
+                        .from('goals')
+                        .select('*')
+                        .eq('couple_id', member.couple_id)
+                        .order('target_date', { ascending: true }); // Order by date
+                    setGoals(data || []);
+                }
+            } catch (error) {
+                console.error('Error fetching goals:', error);
+            } finally {
+                setLoading(false);
             }
         }
         fetchGoals();
     }, [refreshTrigger]);
 
-
-
-    // Identify the "Meta do Milhão" (assuming it's the one with the biggest target or specific name, for now simply the first one or logic)
-    // For MVP, if multiple goals exist, we can treat the first one as MAIN (Million) and others as secondary.
-    const mainGoal = goals.find(g => g.target_amount >= 1000000) || goals[0];
-    const subGoals = goals.filter(g => g !== mainGoal);
-
-    const progress = mainGoal ? (mainGoal.current_amount / mainGoal.target_amount) * 100 : 0;
+    const totalTarget = goals.reduce((acc, goal) => acc + goal.target_amount, 0);
+    const totalCurrent = goals.reduce((acc, goal) => acc + goal.current_amount, 0);
+    const progress = totalTarget > 0 ? (totalCurrent / totalTarget) * 100 : 0;
 
     return (
         <div className="fade-in">
-            <Header title="Metas do Casal" action={
-                <button className={styles.primaryBtn} onClick={() => setIsModalOpen(true)}>
-                    <Plus size={18} /> Novo Pote
-                </button>
-            } />
+            <Header title="Metas do Casal" action={<button onClick={() => setIsModalOpen(true)} className={styles.primaryBtn}><Plus size={18} /> Nova Meta</button>} />
 
             <div className={styles.container}>
-                {mainGoal ? (
-                    <div className={styles.mainGoalCard}>
-                        <div className={styles.iconWrapper}>
-                            <Trophy size={32} color="#F59E0B" />
+                {/* Summary Cards */}
+                <div className={styles.summaryGrid}>
+                    <div className={styles.summaryCard}>
+                        <div className={styles.iconBox} style={{ background: '#ECFDF5', color: '#10B981' }}>
+                            <Target size={24} />
                         </div>
-                        <div className={styles.goalInfo}>
-                            <h2 className={styles.goalTitle}>{mainGoal.goal_type || 'Meta Principal'}</h2>
-                            <p className={styles.goalSubtitle}>O objetivo principal da jornada.</p>
-                        </div>
-
-                        <div className={styles.progressContainer}>
-                            <div className={styles.progressLabels}>
-                                <span>{formatCurrency(mainGoal.current_amount)}</span>
-                                <span>{formatCurrency(mainGoal.target_amount)}</span>
-                            </div>
-                            <div className={styles.progressBar}>
-                                <div className={styles.progressFill} style={{ width: `${Math.min(progress, 100)}%` }}></div>
-                            </div>
-                            <div className={styles.progressText}>{progress.toFixed(1)}% Concluído</div>
+                        <div>
+                            <p className={styles.label}>Meta Total</p>
+                            <p className={styles.value}>{formatCurrency(totalTarget)}</p>
                         </div>
                     </div>
-                ) : (
-                    <div className={styles.emptyState}>Carregando Meta Principal...</div>
-                )}
-
-                <div className={styles.subGoals}>
-                    <h3>Outros Potes & Objetivos</h3>
-                    <div className={styles.placeholders} style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
-                        {subGoals.map(goal => {
-                            const p = (goal.current_amount / goal.target_amount) * 100;
-                            return (
-                                <div key={goal.id} className={styles.subGoalCard}>
-                                    <div className={styles.subGoalIcon}><Wallet size={20} color="var(--primary)" /></div>
-                                    <div className={styles.subGoalName}>{goal.goal_type}</div>
-                                    <div className={styles.subGoalValue}>{formatCurrency(goal.current_amount)}</div>
-                                    <div className={styles.miniProgBar}>
-                                        <div className={styles.miniProgFill} style={{ width: `${Math.min(p, 100)}%` }}></div>
-                                    </div>
-                                    <div className={styles.subGoalTarget}>de {formatCurrency(goal.target_amount)}</div>
-                                </div>
-                            )
-                        })}
-
-                        <div className={styles.addCard} onClick={() => setIsModalOpen(true)}>
-                            <Plus size={24} />
-                            <span>Criar Novo Pote</span>
+                    <div className={styles.summaryCard}>
+                        <div className={styles.iconBox} style={{ background: '#EFF6FF', color: '#3B82F6' }}>
+                            <Wallet size={24} />
+                        </div>
+                        <div>
+                            <p className={styles.label}>Acumulado</p>
+                            <p className={styles.value}>{formatCurrency(totalCurrent)}</p>
+                        </div>
+                    </div>
+                    <div className={styles.summaryCard}>
+                        <div className={styles.iconBox} style={{ background: '#FFF7ED', color: '#F59E0B' }}>
+                            <Trophy size={24} />
+                        </div>
+                        <div>
+                            <p className={styles.label}>Conquistas</p>
+                            <p className={styles.value}>{goals.filter(g => g.current_amount >= g.target_amount).length} / {goals.length}</p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* V3 Feature: Timeline */}
-            <div style={{ marginTop: '2rem' }}>
-                <GoalTimeline />
-            </div>
+                {/* PROJECTION TIMELINE (FEATURE 4) */}
+                {goals.length > 0 && (
+                    <div className="mb-8">
+                        <GoalTimeline goals={goals} monthlyContribution={2000} /> {/* Mock contribution for now */}
+                    </div>
+                )}
 
+                {/* Goals List */}
+                <h3 className={styles.sectionTitle}>Seus Potes</h3>
+                <div className={styles.goalsGrid}>
+                    {loading ? (
+                        <p>Carregando metas...</p>
+                    ) : goals.length === 0 ? (
+                        <div className={styles.emptyState}>
+                            <p>Nenhuma meta criada ainda.</p>
+                            <button onClick={() => setIsModalOpen(true)} className={styles.createBtn}>Criar Primeira Meta</button>
+                        </div>
+                    ) : (
+                        goals.map(goal => (
+                            <div key={goal.id} className={styles.goalCard}>
+                                <div className={styles.cardHeader}>
+                                    <div className={styles.goalIcon}>{goal.icon || '🎯'}</div>
+                                    <div className={styles.goalInfo}>
+                                        <h4>{goal.title}</h4>
+                                        <span>{new Date(goal.target_date).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                                <div className={styles.progressSection}>
+                                    <div className={styles.amounts}>
+                                        <span className={styles.current}>{formatCurrency(goal.current_amount)}</span>
+                                        <span className={styles.target}>de {formatCurrency(goal.target_amount)}</span>
+                                    </div>
+                                    <div className={styles.progressBar}>
+                                        <div
+                                            className={styles.progressFill}
+                                            style={{ width: `${Math.min((goal.current_amount / goal.target_amount) * 100, 100)}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
 
-            {
-                user && (
+                {user && (
                     <AddGoalModal
                         isOpen={isModalOpen}
                         onClose={handleClose}
                         onSuccess={() => setRefreshTrigger(prev => prev + 1)}
                         user={user}
                     />
-                )
-            }
-        </div >
+                )}
+            </div>
+        </div>
+    );
+}
+
+export default function GoalsPage() {
+    return (
+        <Suspense fallback={<div className="p-8 text-center">Carregando metas...</div>}>
+            <GoalsContent />
+        </Suspense>
     );
 }

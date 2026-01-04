@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, TrendingUp, TrendingDown, Target, X } from 'lucide-react';
+import { Plus, X, Target, TrendingUp, TrendingDown, Bot } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import styles from './FabMenu.module.css';
 
@@ -20,13 +20,23 @@ export function FabMenu() {
             router.push('/dashboard/wallet?action=new_income');
         } else if (action === 'EXPENSE') {
             router.push('/dashboard/wallet?action=new_expense');
+        } else if (action === 'ADVISOR') {
+            router.push('/dashboard/advisor');
         }
+        setIsOpen(false);
     };
 
     return (
         <div className={styles.fabContainer}>
             {isOpen && (
                 <div className={styles.menuItems}>
+                    <button
+                        className={`${styles.menuItem} ${styles.aiItem}`}
+                        onClick={() => handleAction('ADVISOR')}
+                    >
+                        <Bot size={20} />
+                        <span>Consultor IA</span>
+                    </button>
                     <div className={styles.menuItem}>
                         <span className={styles.label}>Nova Meta</span>
                         <button
