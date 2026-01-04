@@ -53,7 +53,9 @@ export function NetWorthCard() {
 
         assets.forEach(asset => {
             const val = Number(asset.value);
-            if (asset.type === 'INVESTMENT' || asset.liquidity === 'HIGH') {
+            // Liquid: INVESTMENT or explicitly named 'Saldo...' logic if type is generic
+            // For now, simpler: INVESTMENT is Liquid, others are Fixed.
+            if (asset.type === 'INVESTMENT') {
                 liquid += val;
             } else {
                 fixed += val;

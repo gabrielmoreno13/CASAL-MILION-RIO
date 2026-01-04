@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { X, Home, Car, TrendingUp, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { formatCurrencyInput, parseCurrencyInput } from '@/lib/utils';
 import styles from './AddAssetModal.module.css';
 
 interface AddAssetModalProps {
@@ -30,11 +31,8 @@ export function AddAssetModal({ isOpen, onClose, onSuccess, user }: AddAssetModa
 
     if (!isOpen) return null;
 
-    const parseBRL = (value: string) => {
-        // Remove R$, spaces, and dots (thousand separators)
-        const clean = value.replace(/[R$\s.]/g, '');
-        // Replace comma with dot for decimal
-        return parseFloat(clean.replace(',', '.'));
+    const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAmount(formatCurrencyInput(e.target.value));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -54,7 +52,7 @@ export function AddAssetModal({ isOpen, onClose, onSuccess, user }: AddAssetModa
                 throw new Error('Você precisa fazer parte de um casal para adicionar ativos.');
             }
 
-            const numericValue = parseBRL(amount);
+            const numericValue = parseCurrencyInput(amount);
 
             if (isNaN(numericValue)) {
                 throw new Error('Valor inválido.');
@@ -64,8 +62,8 @@ export function AddAssetModal({ isOpen, onClose, onSuccess, user }: AddAssetModa
                 couple_id: member.couple_id,
                 name,
                 type,
-                value: numericValue,
-                liquidity: type === 'INVESTMENT' ? 'HIGH' : 'LOW'
+                value: numericValue
+                // liquidity column removed as it doesn't exist in DB
             });
 
             if (error) throw error;
@@ -122,8 +120,8 @@ export function AddAssetModal({ isOpen, onClose, onSuccess, user }: AddAssetModa
                             type="text"
                             required
                             value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            placeholder="0,00"
+                            onChange={handleAmountChange}
+                            placeholder="R$ 0,00"
                             className={styles.input}
                         />
                     </div>

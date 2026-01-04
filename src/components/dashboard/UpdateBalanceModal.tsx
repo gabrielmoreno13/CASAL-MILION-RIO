@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase';
 import { X, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { formatCurrencyInput, parseCurrencyInput } from '@/lib/utils';
 import styles from './UpdateBalanceModal.module.css';
 
 interface UpdateBalanceModalProps {
@@ -35,8 +36,6 @@ export function UpdateBalanceModal({ isOpen, onClose, onSuccess, user }: UpdateB
 
             if (!member) return;
 
-            // Find the main "Cash/Balance" asset
-            // We look for 'Saldo Inicial' or 'Saldo Atual' or type=INVESTMENT with name containing 'Saldo'
             const { data: assets } = await supabase
                 .from('assets')
                 .select('*')
@@ -46,7 +45,8 @@ export function UpdateBalanceModal({ isOpen, onClose, onSuccess, user }: UpdateB
                 .limit(1);
 
             if (assets && assets.length > 0) {
-                setAmount(assets[0].value.toString());
+                // Should format initial value? Maybe just show string
+                setAmount(formatCurrencyInput(assets[0].value.toString().replace('.', ',')));
                 setExistingAssetId(assets[0].id);
             }
         } catch (error) {
@@ -54,9 +54,8 @@ export function UpdateBalanceModal({ isOpen, onClose, onSuccess, user }: UpdateB
         }
     };
 
-    const parseBRL = (value: string) => {
-        const clean = value.replace(/[R$\s.]/g, '');
-        return parseFloat(clean.replace(',', '.'));
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAmount(formatCurrencyInput(e.target.value));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -72,14 +71,14 @@ export function UpdateBalanceModal({ isOpen, onClose, onSuccess, user }: UpdateB
 
             if (!member) throw new Error('Couple not found');
 
-            const numericValue = parseBRL(amount);
+            const numericValue = parseCurrencyInput(amount);
             if (isNaN(numericValue)) throw new Error('Valor inválido');
 
             if (existingAssetId) {
                 // Update existing
                 const { error } = await supabase
                     .from('assets')
-                    .update({ value: numericValue, name: 'Saldo Atual' }) // Ensure name is consistent
+                    .update({ value: numericValue, name: 'Saldo Atual' })
                     .eq('id', existingAssetId);
                 if (error) throw error;
             } else {
@@ -90,15 +89,10 @@ export function UpdateBalanceModal({ isOpen, onClose, onSuccess, user }: UpdateB
                         couple_id: member.couple_id,
                         name: 'Saldo Atual',
                         type: 'INVESTMENT',
-                        liquidity: 'HIGH',
                         value: numericValue
                     });
                 if (error) throw error;
             }
-
-            // Also update the Financial Goal current_amount to reflect Total Net Worth?
-            // Ideally, we trigger a recalculation on the backend or here.
-            // For now, let's just update the asset. The dashboard sums assets.
 
             onSuccess();
             onClose();
@@ -128,8 +122,8 @@ export function UpdateBalanceModal({ isOpen, onClose, onSuccess, user }: UpdateB
                             type="text"
                             required
                             value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            placeholder="0,00"
+                            onChange={handleChange}
+                            placeholder="R$ 0,00"
                             className={styles.input}
                             autoFocus
                         />
