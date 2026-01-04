@@ -12,7 +12,7 @@ import {
     ResponsiveContainer
 } from 'recharts';
 import { useState } from 'react';
-import styles from './EvolutionChart.module.css';
+
 
 // Mock data (Since we don't have history table yet)
 // In V2.1 this will come from a 'balance_history' table
@@ -49,24 +49,24 @@ export function EvolutionChart() {
         new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
     return (
-        <div className={styles.card}>
-            <div className={styles.header}>
-                <h3 className={styles.title}>Evolução Patrimonial</h3>
-                <div className={styles.filter}>
+        <div className="h-full flex flex-col">
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-white">Evolução Patrimonial</h3>
+                <div className="flex bg-white/5 rounded-xl p-1 border border-white/5">
                     <button
-                        className={period === '6M' ? styles.filterBtnActive : styles.filterBtn}
+                        className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${period === '6M' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                         onClick={() => setPeriod('6M')}
                     >
                         6M
                     </button>
                     <button
-                        className={period === '1Y' ? styles.filterBtnActive : styles.filterBtn}
+                        className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${period === '1Y' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                         onClick={() => setPeriod('1Y')}
                     >
                         1A
                     </button>
                     <button
-                        className={period === 'ALL' ? styles.filterBtnActive : styles.filterBtn}
+                        className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${period === 'ALL' ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                         onClick={() => setPeriod('ALL')}
                     >
                         Tudo
@@ -74,21 +74,21 @@ export function EvolutionChart() {
                 </div>
             </div>
 
-            <div className={styles.chartArea}>
+            <div className="flex-1 w-full min-h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data}>
                         <defs>
                             <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#10B981" stopOpacity={0.2} />
+                                <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
                                 <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff10" />
                         <XAxis
                             dataKey="month"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#9CA3AF', fontSize: 12 }}
+                            tick={{ fill: '#6B7280', fontSize: 12 }}
                             dy={10}
                         />
                         <YAxis
@@ -98,9 +98,9 @@ export function EvolutionChart() {
                             content={({ active, payload, label }) => {
                                 if (active && payload && payload.length) {
                                     return (
-                                        <div className={styles.tooltip}>
-                                            <p className={styles.tooltipLabel}>{label}</p>
-                                            <p className={styles.tooltipValue}>
+                                        <div className="bg-[#1A1D24] border border-white/10 rounded-xl p-3 shadow-xl">
+                                            <p className="text-gray-400 text-xs mb-1">{label}</p>
+                                            <p className="text-emerald-400 font-bold text-lg">
                                                 {formatCurrency(Number(payload[0].value))}
                                             </p>
                                         </div>

@@ -5,7 +5,7 @@ import { formatCurrency } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { DollarSign, TrendingUp, Target, CreditCard, ShoppingBag, ArrowUpRight } from 'lucide-react';
-import styles from './Overview.module.css';
+
 import { NetWorthCard } from './NetWorthCard';
 import { EvolutionChart } from './EvolutionChart';
 import { LevelProgress } from '../gamification/LevelProgress';
@@ -99,20 +99,20 @@ export function DashboardOverview() {
     const percentToGoal = ((metrics.netWorth / metrics.goal) * 100).toFixed(1);
 
     return (
-        <div className={styles.container}>
+        <div className="p-8 max-w-7xl mx-auto space-y-8">
             {/* Header V3: Couple Toggle & Notifications */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Visão Geral</h1>
-                    <p className="text-gray-500 text-sm capitalize">
+                    <h1 className="text-3xl font-bold text-white mb-1">Visão Geral</h1>
+                    <p className="text-gray-400 text-sm capitalize">
                         {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
                     {/* Mock Notification for Pending Approvals */}
                     <div className="relative">
                         <button
-                            className="p-2 text-gray-400 hover:text-gray-600 relative"
+                            className="p-3 rounded-full bg-white/5 border border-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors relative"
                             onClick={() => {
                                 // For MVP demo: if pending exists, show first. 
                                 // Or use useCouple to trigger mock.
@@ -133,7 +133,7 @@ export function DashboardOverview() {
                         >
                             <Bell size={20} />
                             {(pendingApprovals.length > 0 || true) && ( // Always show dot for demo
-                                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#0F1115]"></span>
                             )}
                         </button>
                     </div>
@@ -146,16 +146,14 @@ export function DashboardOverview() {
             {/* Level Bar (Gamification) */}
             <LevelProgress />
 
-            <div className="mb-8">
+            <div className="w-full">
                 <DailySpendWidget onClick={() => setIsCalculatorOpen(true)} />
             </div>
 
             <NetWorthCard />
 
             {/* Metrics Grid */}
-            <div className={styles.grid}>
-                {/* Removido o card de Patrimônio antigo pois agora tem o Header dedicado */}
-
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <MetricCard
                     label="Total Investido"
                     value={formatCurrency(metrics.invested)}
@@ -186,26 +184,26 @@ export function DashboardOverview() {
             <AchievementsGrid />
 
             {/* Main Section: Chart & Activity */}
-            <div className={styles.mainSection}>
-                <div className={styles.chartSection}>
+            <div className="grid lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 bg-[#0F1115] border border-white/5 rounded-3xl p-6">
                     <EvolutionChart />
                 </div>
 
-                <div className={styles.activitySection}>
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className={styles.sectionTitle} style={{ marginBottom: 0 }}>Atividade Recente</h3>
-                        <Link href="/dashboard/wallet" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
-                            Ver tudo
+                <div className="bg-[#0F1115] border border-white/5 rounded-3xl p-6 flex flex-col h-[500px]">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-xl font-bold text-white">Atividade Recente</h3>
+                        <Link href="/dashboard/wallet" className="text-sm text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1 transition-colors">
+                            Ver tudo <ArrowUpRight size={14} />
                         </Link>
                     </div>
                     {loading ? (
-                        <p style={{ color: '#9CA3AF', padding: '1rem' }}>Carregando...</p>
+                        <div className="flex-1 flex items-center justify-center text-gray-500">Carregando...</div>
                     ) : recentActivity.length === 0 ? (
-                        <div className={styles.emptyActivity}>
-                            <p>Nenhuma despesa ainda.</p>
+                        <div className="flex-1 flex items-center justify-center text-gray-500">
+                            Nenhuma despesa ainda.
                         </div>
                     ) : (
-                        <div className={styles.activityList}>
+                        <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
                             {recentActivity.map((activity) => (
                                 <ActivityItem
                                     key={activity.id}
@@ -248,20 +246,25 @@ import Link from 'next/link';
 
 function MetricCard({ label, value, icon, footer, href, onClick }: any) {
     const content = (
-        <div className={`${styles.card} hover:transform hover:scale-105 transition-transform duration-200 cursor-pointer`}>
+        <div className="bg-[#0F1115] border border-white/5 p-6 rounded-3xl hover:bg-white/5 transition-all duration-300 group cursor-pointer h-full flex flex-col justify-between">
             <div>
-                <div className={styles.cardLabel}>{icon} {label}</div>
-                <div className={styles.cardValue}>{value}</div>
+                <div className="flex items-center gap-2 text-gray-400 mb-2 group-hover:text-emerald-400 transition-colors">
+                    {icon}
+                    <span className="text-sm font-medium">{label}</span>
+                </div>
+                <div className="text-2xl font-bold text-white tracking-tight">{value}</div>
             </div>
-            <div className={styles.cardFooter}>{footer}</div>
+            <div className="mt-4 text-xs font-medium text-gray-500 uppercase tracking-wider group-hover:text-emerald-500/70 transition-colors">
+                {footer}
+            </div>
         </div>
     );
 
     if (href) {
-        return <Link href={href} style={{ textDecoration: 'none' }}>{content}</Link>;
+        return <Link href={href} className="block h-full">{content}</Link>;
     }
 
-    return <div onClick={onClick}>{content}</div>;
+    return <div onClick={onClick} className="h-full">{content}</div>;
 }
 
 

@@ -4,7 +4,7 @@ import { useGamification, LEVELS } from '@/contexts/GamificationContext';
 import { Award, Zap, Bell, Info } from 'lucide-react';
 import React from 'react';
 import { LevelDetailsModal } from './LevelDetailsModal';
-import styles from './LevelProgress.module.css';
+
 
 export function LevelProgress() {
     const { level, currentXP, totalXP } = useGamification();
@@ -43,41 +43,47 @@ export function LevelProgress() {
 
     return (
         <>
-            <div className={styles.container} onClick={() => setShowDetails(true)} style={{ cursor: 'pointer' }}>
-                <div className={styles.header}>
-                    <div className={styles.levelInfo}>
-                        <span className={styles.levelBadge}>Level {level}</span>
-                        <span className={styles.levelName}>{currentLevelData.name}</span>
+            <div
+                className="w-full bg-[#0F1115] border border-white/5 rounded-3xl p-6 cursor-pointer hover:bg-white/5 transition-all duration-300 group"
+                onClick={() => setShowDetails(true)}
+            >
+                <div className="flex justify-between items-center mb-4">
+                    <div className="flex flex-col">
+                        <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Seu Nível</span>
+                        <div className="flex items-center gap-3">
+                            <span className="bg-emerald-500/20 text-emerald-500 px-3 py-1 rounded-lg text-sm font-bold border border-emerald-500/20">
+                                Level {level}
+                            </span>
+                            <span className="text-white font-bold text-lg">{currentLevelData.name}</span>
+                        </div>
                     </div>
-                    <div className={styles.levelBenefits}>
-                        <button className={styles.iconButton} title="Benefícios do Nível">
+                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors" title="Benefícios do Nível">
                             <Award size={16} />
-                        </button>
-                        <button className={styles.iconButton} title="Notificações">
-                            <Bell size={16} />
                         </button>
                     </div>
                 </div>
 
-                <div className={styles.progressBarContainer}>
+                <div className="relative h-3 w-full bg-white/5 rounded-full overflow-hidden mb-3">
                     <div
-                        className={styles.progressBarFill}
+                        className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(16,185,129,0.5)]"
                         style={{ width: `${progressPercent}%` }}
                     />
                 </div>
 
-                <div className={styles.progressText}>
-                    <span>
-                        <Zap size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle', color: '#F59E0B' }} />
-                        <span className={styles.highlight}>{totalXP.toLocaleString()}</span> / {requiredXP.toLocaleString()} XP
+                <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400 flex items-center gap-1">
+                        <Zap size={14} className="text-amber-500" fill="currentColor" />
+                        <span className="text-white font-bold">{totalXP.toLocaleString()}</span>
+                        <span>/ {requiredXP.toLocaleString()} XP</span>
                     </span>
                     {nextLevelData && (
-                        <span>
-                            Faltam <span className={styles.highlight}>{missingXP.toLocaleString()} XP</span> para {nextLevelName}
+                        <span className="text-gray-500 text-xs">
+                            Faltam <span className="text-emerald-400 font-medium">{missingXP.toLocaleString()} XP</span> para {nextLevelName}
                         </span>
                     )}
                     {!nextLevelData && (
-                        <span>Você atingiu o nível máximo! 🚀</span>
+                        <span className="text-emerald-400 font-medium text-xs">Nível Máximo Atingido! 🚀</span>
                     )}
                 </div>
             </div>

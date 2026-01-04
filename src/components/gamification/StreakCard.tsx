@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useGamification } from '@/contexts/GamificationContext';
 import { Flame, Trophy, AlertTriangle } from 'lucide-react';
 import { StreakDetailsModal } from './StreakDetailsModal';
-import styles from './StreakCard.module.css';
+
 
 export function StreakCard() {
     const { currentStreak, longestStreak, lastInvestmentDate } = useGamification();
@@ -26,34 +26,36 @@ export function StreakCard() {
     return (
         <>
             <div
-                className={`${styles.card} cursor-pointer hover:transform hover:scale-105 transition-transform duration-200`}
+                className="bg-[#0F1115] border border-white/5 p-6 rounded-3xl hover:bg-white/5 transition-all duration-300 group cursor-pointer h-full flex flex-col justify-between"
                 onClick={() => setShowModal(true)}
             >
-                <div className={styles.header}>
-                    <div className={styles.iconWrapper}>
-                        <Flame size={24} fill={isWarning ? "#F59E0B" : "#EF4444"} strokeWidth={0} />
+                <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-2 text-gray-400 group-hover:text-amber-500 transition-colors">
+                        <Flame size={20} className={isWarning ? 'text-amber-500' : 'text-red-500'} fill={isWarning ? "#F59E0B" : "#EF4444"} />
+                        <span className="text-sm font-medium">Streak Atual</span>
                     </div>
-                    <h3 className={styles.title}>Streak Atual</h3>
                 </div>
 
-                <div className={styles.content}>
-                    <span className={styles.days}>{currentStreak}</span>
-                    <span className={styles.label}>meses</span> {/* Changed from 'dias' assuming monthly investment context */}
+                <div>
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-3xl font-bold text-white tracking-tight">{currentStreak}</span>
+                        <span className="text-sm text-gray-500 font-medium uppercase">Mês{currentStreak !== 1 ? 'es' : ''}</span>
+                    </div>
                 </div>
 
-                <div className={styles.footer}>
-                    <div className={styles.record}>
+                <div className="mt-4 flex items-center justify-between text-xs font-medium">
+                    <div className="flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg">
                         <Trophy size={12} />
                         Recorde: {longestStreak}
                     </div>
-                    {isWarning && (
-                        <div className={styles.warning}>
+
+                    {isWarning ? (
+                        <div className="text-amber-500 flex items-center gap-1 animate-pulse">
                             <AlertTriangle size={12} />
-                            Invista esse mês!
+                            Invista!
                         </div>
-                    )}
-                    {!isWarning && (
-                        <div>Mantendo o ritmo! 🔥</div>
+                    ) : (
+                        <div className="text-gray-500">Mantendo o ritmo! 🔥</div>
                     )}
                 </div>
             </div>

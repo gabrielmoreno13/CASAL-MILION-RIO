@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
 import { TrendingUp, Wallet, Car, Home, RefreshCw, ArrowRight } from 'lucide-react'; // Icons
 import Link from 'next/link';
-import styles from './NetWorthCard.module.css';
+
 import { UpdateBalanceModal } from './UpdateBalanceModal';
 
 export function NetWorthCard() {
@@ -82,41 +82,62 @@ export function NetWorthCard() {
         if (user) fetchWealthData();
     }, [user]);
 
-    if (loading) return <div className={styles.card} style={{ opacity: 0.5 }}>Carregando Patrimônio...</div>;
+    if (loading) return (
+        <div className="w-full bg-[#0F1115] border border-white/5 rounded-3xl p-6 opacity-50 text-white font-medium flex items-center justify-center">
+            <RefreshCw className="animate-spin mr-2" size={16} />
+            Carregando Patrimônio...
+        </div>
+    );
 
     return (
-        <div className={styles.card}>
-            <div className={styles.header}>
-                <Link href="/dashboard/wallet" className="flex items-center gap-2 hover:text-emerald-600 transition-colors">
-                    <span className={styles.title}>Patrimônio Total</span>
-                    <ArrowRight size={16} className="text-gray-400" />
-                </Link>
-                <button
-                    className="text-xs flex items-center gap-1 text-gray-500 hover:text-emerald-600 transition-colors"
-                    onClick={() => setIsUpdateModalOpen(true)}
-                    title="Atualizar Saldo"
-                >
-                    <RefreshCw size={12} /> Atualizar
-                </button>
-            </div>
+        <div className="w-full bg-gradient-to-br from-[#0F1115] to-[#12141A] border border-white/5 rounded-3xl p-6 lg:p-8 relative overflow-hidden group">
+            {/* Background Glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
 
-            <Link href="/dashboard/wallet" className={styles.value} style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
-                {formatCurrency(data.total)}
-            </Link>
-
-            <div className={styles.breakdown}>
+            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div>
-                    <div className={styles.breakdownLabel}>Liquidez (Caixa)</div>
-                    <div className={styles.breakdownValue}>
-                        <Wallet size={14} style={{ display: 'inline', marginRight: 4 }} />
-                        {formatCurrency(data.liquid)}
+                    <div className="flex items-center gap-4 mb-2">
+                        <Link href="/dashboard/wallet" className="flex items-center gap-2 group-hover:text-emerald-400 text-gray-400 transition-colors">
+                            <span className="text-sm font-medium uppercase tracking-wider">Patrimônio Total</span>
+                            <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
+                        </Link>
+                        <button
+                            className="text-xs flex items-center gap-1 text-gray-500 hover:text-emerald-400 transition-colors bg-white/5 px-2 py-1 rounded-lg border border-white/5 hover:bg-white/10"
+                            onClick={() => setIsUpdateModalOpen(true)}
+                            title="Atualizar Saldo"
+                        >
+                            <RefreshCw size={10} /> Atualizar
+                        </button>
                     </div>
+                    <Link href="/dashboard/wallet" className="block">
+                        <div className="text-4xl md:text-5xl font-bold text-white tracking-tighter hover:scale-[1.01] transition-transform origin-left">
+                            {formatCurrency(data.total)}
+                        </div>
+                    </Link>
                 </div>
-                <div>
-                    <div className={styles.breakdownLabel}>Imobilizado (Bens)</div>
-                    <div className={styles.breakdownValue}>
-                        <Home size={14} style={{ display: 'inline', marginRight: 4 }} />
-                        {formatCurrency(data.fixed)}
+
+                <div className="flex gap-4 md:gap-8 flex-wrap">
+                    <div className="bg-white/5 border border-white/5 rounded-2xl p-3 md:px-5 md:py-3 flex items-center gap-3">
+                        <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-500">
+                            <Wallet size={18} />
+                        </div>
+                        <div>
+                            <div className="text-xs text-gray-400 font-medium uppercase">Liquidez</div>
+                            <div className="text-lg font-bold text-white leading-tight">
+                                {formatCurrency(data.liquid)}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-white/5 border border-white/5 rounded-2xl p-3 md:px-5 md:py-3 flex items-center gap-3">
+                        <div className="p-2 bg-purple-500/20 rounded-lg text-purple-500">
+                            <Home size={18} />
+                        </div>
+                        <div>
+                            <div className="text-xs text-gray-400 font-medium uppercase">Imobilizado</div>
+                            <div className="text-lg font-bold text-white leading-tight">
+                                {formatCurrency(data.fixed)}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

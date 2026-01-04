@@ -20,7 +20,7 @@ export default async function DashboardLayout({
     */
 
     return (
-        <div className="min-h-screen bg-[#F8F9FA]">
+        <div className="min-h-screen bg-[#0A0A0A] text-white">
             {/* 
            We need to fetch the user to pass to Sidebar. 
            In Next.js App Router, we usually do this with a utility that uses `cookies()`.
@@ -31,7 +31,7 @@ export default async function DashboardLayout({
        */}
             <Sidebar user={{ user_metadata: { full_name: 'Carregando...' } }} /> {/* Placeholder, Sidebar will fetch real data */}
 
-            <main style={{ marginLeft: '280px', minHeight: '100vh' }}>
+            <main className="ml-72 min-h-screen">
                 {children}
             </main>
         </div>

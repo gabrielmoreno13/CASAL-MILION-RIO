@@ -3,7 +3,7 @@
 import { useCouple } from '@/contexts/CoupleContext';
 import { Users } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
-import styles from './ContributionCard.module.css';
+
 
 export function ContributionCard() {
     const { partner1, partner2, viewMode } = useCouple();
@@ -19,22 +19,23 @@ export function ContributionCard() {
     const p2Percent = Math.round((partner2.monthlyContribution / totalIncome) * 100);
 
     return (
-        <div className={styles.card}>
-            <h3 className={styles.title}>
-                <Users size={20} /> Contribuição de Cada Um
+        <div className="bg-[#0F1115] border border-white/5 rounded-3xl p-6">
+            <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-6">
+                <Users size={20} className="text-emerald-500" /> Contribuição de Cada Um
             </h3>
 
-            <div className={styles.comparisonArea}>
+            <div className="flex flex-col md:flex-row gap-8 items-stretch md:items-center">
                 <PartnerStat
                     name={partner1.name}
                     percent={p1Percent}
                     amount={partner1.monthlyContribution}
                     invested={partner1.investments}
                     expenses={partner1.expenses}
-                    color="#10B981" // Green
+                    color="bg-emerald-500"
+                    textColor="text-emerald-400"
                 />
 
-                <div style={{ width: 1, height: 60, background: '#E5E7EB' }} />
+                <div className="hidden md:block w-px h-32 bg-white/5" />
 
                 <PartnerStat
                     name={partner2.name}
@@ -42,39 +43,42 @@ export function ContributionCard() {
                     amount={partner2.monthlyContribution}
                     invested={partner2.investments}
                     expenses={partner2.expenses}
-                    color="#3B82F6" // Blue
+                    color="bg-blue-500"
+                    textColor="text-blue-400"
                 />
             </div>
         </div>
     );
 }
 
-function PartnerStat({ name, percent, amount, invested, expenses, color }: any) {
+function PartnerStat({ name, percent, amount, invested, expenses, color, textColor }: any) {
     return (
-        <div className={styles.partnerSection}>
-            <div className={styles.partnerHeader}>
-                <span className={styles.partnerName}>{name}</span>
-                <span className={styles.contributionPercent}>{percent}%</span>
+        <div className="flex-1">
+            <div className="flex justify-between items-end mb-2">
+                <span className="text-white font-bold text-lg">{name}</span>
+                <span className={`text-2xl font-bold ${textColor}`}>{percent}%</span>
             </div>
 
-            <div className={styles.barContainer}>
+            <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden mb-4">
                 <div
-                    className={styles.barFill}
-                    style={{ width: `${percent}%`, background: color }}
+                    className={`h-full rounded-full transition-all duration-1000 ${color}`}
+                    style={{ width: `${percent}%` }}
                 />
             </div>
 
-            <p style={{ marginBottom: 12, fontWeight: 500 }}>
-                {formatCurrency(amount)} <span style={{ color: '#9CA3AF', fontSize: 12 }}>este mês</span>
+            <p className="mb-4 font-semibold text-white">
+                {formatCurrency(amount)} <span className="text-gray-500 text-xs font-normal">este mês</span>
             </p>
 
-            <div className={styles.details}>
-                <div>Investimentos</div>
-                <div className={styles.value} style={{ color }}>{formatCurrency(invested)}</div>
-            </div>
-            <div className={styles.details}>
-                <div>Despesas</div>
-                <div className={styles.value}>{formatCurrency(expenses)}</div>
+            <div className="space-y-2">
+                <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400">Investimentos</span>
+                    <span className={`font-bold ${textColor}`}>{formatCurrency(invested)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400">Despesas</span>
+                    <span className="text-white font-medium">{formatCurrency(expenses)}</span>
+                </div>
             </div>
         </div>
     );

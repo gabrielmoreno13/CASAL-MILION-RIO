@@ -3,7 +3,7 @@
 import { formatCurrency } from '@/lib/utils';
 import { ShoppingBag, Heart, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import styles from './ActivityItem.module.css';
+
 
 interface ActivityItemProps {
     title: string;
@@ -40,56 +40,60 @@ export function ActivityItem({ title, date, amount, logoUrl, userName, onClick }
     const displayAmount = typeof amount === 'number' ? `- ${formatCurrency(amount)}` : amount;
 
     return (
-        <div className={styles.activityItem} onClick={onClick} style={{ cursor: 'pointer' }}>
-            <div className={styles.activityIcon} style={{
-                backgroundColor: imgSrc && !imgError ? 'transparent' : '#F3F4F6',
-                fontSize: imgSrc && !imgError ? 'inherit' : '1.2rem',
-                overflow: 'hidden'
-            }}>
-                {imgSrc && !imgError ? (
-                    <img
-                        src={imgSrc}
-                        alt={title}
-                        style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
-                        onError={() => setImgError(true)}
-                    />
-                ) : (
-                    <span>{logoUrl && !logoUrl.startsWith('http') ? logoUrl : <ShoppingBag size={18} />}</span>
-                )}
-            </div>
-
-            <div className={styles.activityContent}>
-                <div className={styles.header}>
-                    <div className={styles.title}>{title}</div>
-                    <div className={styles.amount} style={{ color: '#111827' }}>
-                        {displayAmount}
-                    </div>
-                </div>
-
-                <div className={styles.meta}>
-                    <span>{date}</span>
-                    {userName && (
-                        <>
-                            <span>•</span>
-                            <div className="flex items-center gap-1">
-                                <span className={styles.userAvatar}>{userName.charAt(0)}</span>
-                                <span>{userName}</span>
-                            </div>
-                        </>
+        <div
+            className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-transparent hover:border-white/10 hover:bg-white/10 transition-all duration-200 cursor-pointer group"
+            onClick={onClick}
+        >
+            <div className="relative">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden border border-white/5 ${imgSrc && !imgError ? 'bg-white' : 'bg-gray-800 text-gray-400'}`}>
+                    {imgSrc && !imgError ? (
+                        <img
+                            src={imgSrc}
+                            alt={title}
+                            className="w-full h-full object-cover"
+                            onError={() => setImgError(true)}
+                        />
+                    ) : (
+                        <span>{logoUrl && !logoUrl.startsWith('http') ? logoUrl : <ShoppingBag size={20} />}</span>
                     )}
                 </div>
+                {/* Status dot could go here */}
+            </div>
 
-                <div className={styles.footer}>
-                    <button
-                        className={`${styles.actionBtn} ${liked ? styles.active : ''}`}
-                        onClick={() => setLiked(!liked)}
-                    >
-                        <Heart size={14} fill={liked ? "currentColor" : "none"} />
-                    </button>
-                    <button className={styles.actionBtn}>
-                        <MessageCircle size={14} />
-                    </button>
+            <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start mb-0.5">
+                    <h4 className="font-semibold text-white truncate max-w-[70%]">{title}</h4>
+                    <span className="font-bold text-white whitespace-nowrap">{displayAmount}</span>
                 </div>
+
+                <div className="flex justify-between items-center text-xs">
+                    <div className="flex items-center gap-2 text-gray-400">
+                        <span>{date}</span>
+                        {userName && (
+                            <>
+                                <span className="w-1 h-1 bg-gray-600 rounded-full" />
+                                <div className="flex items-center gap-1">
+                                    <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-[10px]">
+                                        {userName.charAt(0)}
+                                    </div>
+                                    <span>{userName}</span>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                    className={`p-2 rounded-lg transition-colors ${liked ? 'text-red-500 bg-red-500/10' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setLiked(!liked);
+                    }}
+                >
+                    <Heart size={16} fill={liked ? "currentColor" : "none"} />
+                </button>
             </div>
         </div>
     );

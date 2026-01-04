@@ -7,7 +7,7 @@ import { LayoutDashboard, Wallet, TrendingUp, Target, Settings, LogOut, Sparkles
 import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import styles from './Sidebar.module.css';
+
 
 const MENU_ITEMS = [
     { icon: LayoutDashboard, label: 'Visão Geral', href: '/dashboard' },
@@ -38,19 +38,17 @@ export function Sidebar({ user: initialUser }: { user: any }) {
     };
 
     return (
-        <aside className={styles.sidebar}>
-            <div className={styles.logo}>
-                <Image
-                    src="/logo.png"
-                    alt="Casal Milionário"
-                    width={180}
-                    height={50}
-                    className="object-contain" // Tailwind class if needed or keep styles
-                    style={{ maxHeight: '50px', width: 'auto' }}
-                />
+        <aside className="fixed left-0 top-0 h-screen w-72 bg-[#0F1115] border-r border-white/5 flex flex-col z-40">
+            <div className="p-6 border-b border-white/5 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center font-bold text-black text-lg">
+                    $
+                </div>
+                <span className="text-xl font-bold text-white tracking-tight">
+                    Casal Milionário
+                </span>
             </div>
 
-            <nav className={styles.nav}>
+            <nav className="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
                 {MENU_ITEMS.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
@@ -58,31 +56,44 @@ export function Sidebar({ user: initialUser }: { user: any }) {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={`${styles.navItem} ${isActive ? styles.active : ''}`}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-medium ${isActive
+                                ? 'bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                }`}
                         >
-                            <Icon className={styles.navIcon} />
+                            <Icon size={20} className={isActive ? 'text-black' : 'text-gray-400 group-hover:text-white'} />
                             {item.label}
                         </Link>
                     );
                 })}
-                <Link href="/simulator" className={`${styles.navItem} ${pathname === '/simulator' ? styles.active : ''}`}>
-                    <TrendingUp size={20} />
-                    <span>Simulador FIRE</span>
-                </Link>
-
+                <div className="pt-4 mt-4 border-t border-white/5">
+                    <Link href="/simulator" className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-medium ${pathname === '/simulator' ? 'bg-emerald-500 text-black' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                        }`}>
+                        <TrendingUp size={20} />
+                        <span>Simulador FIRE</span>
+                    </Link>
+                </div>
             </nav>
 
-            <div className={styles.userProfile}>
-                <div className={styles.avatar}>
-                    {user?.user_metadata?.full_name?.charAt(0) || 'U'}
+            <div className="p-4 border-t border-white/5">
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-bold text-lg">
+                        {user?.user_metadata?.full_name?.charAt(0) || 'U'}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <div className="font-bold text-white truncate text-sm">
+                            {user?.user_metadata?.full_name || 'Usuário'}
+                        </div>
+                        <div className="text-xs text-emerald-400">Plano Premium</div>
+                    </div>
+                    <button
+                        onClick={handleLogout}
+                        className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-red-400 transition-colors"
+                        title="Sair"
+                    >
+                        <LogOut size={18} />
+                    </button>
                 </div>
-                <div className={styles.userInfo}>
-                    <div className={styles.userName}>{user?.user_metadata?.full_name || 'Usuário'}</div>
-                    <div className={styles.userRole}>Plano Premium</div>
-                </div>
-                <button onClick={handleLogout} className={styles.logoutBtn} title="Sair">
-                    <LogOut size={18} />
-                </button>
             </div>
         </aside>
     );

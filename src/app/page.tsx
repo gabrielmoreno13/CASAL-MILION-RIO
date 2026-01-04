@@ -173,6 +173,90 @@ const Hero = () => {
   );
 };
 
+const SocialProof = () => (
+  <section className="py-10 border-y border-white/5 bg-[#0A0A0A]">
+    <div className="container mx-auto px-6 text-center">
+      <p className="text-sm text-gray-500 mb-6 uppercase tracking-widest font-semibold">
+        Usado por mais de 10.000 casais inteligentes
+      </p>
+      <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
+        {['Forbes', 'Bloomberg', 'TechCrunch', 'Valor', 'Exame'].map((logo) => (
+          <div key={logo} className="text-xl md:text-2xl font-bold font-serif text-white">
+            {logo}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+const Methodology = () => (
+  <section className="py-24 bg-[#0F1115] relative">
+    <div className="container mx-auto px-6">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+          A <span className="text-red-500 line-through decoration-red-500/50 decoration-4">velha forma</span> vs O <span className="text-emerald-400">Método Milionário</span>
+        </h2>
+        <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          Por que a maioria dos casais briga por dinheiro, e por que vocês não vão.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        {/* Old Way */}
+        <div className="p-8 rounded-3xl bg-red-500/5 border border-red-500/10 hover:border-red-500/20 transition-colors">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center text-red-500">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </div>
+            <h3 className="text-2xl font-bold text-white">O jeito comum</h3>
+          </div>
+          <ul className="space-y-4">
+            {[
+              "Planilhas que ninguém atualiza",
+              "Conversas tensas sobre gastos",
+              "Metas des alinhadas",
+              "Sensação de 'dinheiro sumindo'",
+              "Investimentos aleatórios"
+            ].map((item, i) => (
+              <li key={i} className="flex items-start gap-3 text-gray-400">
+                <span className="mt-1 text-red-500/50">✕</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* New Way */}
+        <div className="p-8 rounded-3xl bg-emerald-500/5 border border-emerald-500/20 hover:border-emerald-500/40 transition-colors relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-[50px] pointer-events-none group-hover:bg-emerald-500/20 transition-all" />
+
+          <div className="flex items-center gap-3 mb-6 relative z-10">
+            <div className="w-10 h-10 rounded-full bg-emerald-500 text-black flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <h3 className="text-2xl font-bold text-white">Casal Milionário</h3>
+          </div>
+          <ul className="space-y-4 relative z-10">
+            {[
+              "Sincronização bancária automática",
+              "Consultor IA que recomenda cortes",
+              "Metas compartilhadas e visuais",
+              "Projeção exata da independência financeira",
+              "Investimento baseado em dados"
+            ].map((item, i) => (
+              <li key={i} className="flex items-start gap-3 text-gray-200 font-medium">
+                <span className="mt-1 text-emerald-500">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
 const Features = () => {
   const features = [
     {
@@ -234,6 +318,49 @@ const Features = () => {
     </section>
   );
 };
+
+const Testimonials = () => (
+  <section id="testimonials" className="py-24 bg-[#0F1115]">
+    <div className="container mx-auto px-6">
+      <h2 className="text-3xl md:text-5xl font-bold text-center text-white mb-16">
+        Amado por <span className="text-emerald-400">Casais Reais</span>
+      </h2>
+      <div className="grid md:grid-cols-3 gap-8">
+        {[
+          {
+            quote: "Finalmente paramos de brigar por dinheiro. O app mostrou que estávamos gastando R$ 2k em besteiras.",
+            author: "Sarah & Pedro",
+            role: "Casados há 5 anos"
+          },
+          {
+            quote: "O consultor de IA é bizarro de bom. Ele achou assinaturas que a gente nem usava mais!",
+            author: "João & Bia",
+            role: "Noivos"
+          },
+          {
+            quote: "Conseguimos juntar a entrada do nosso apê em metade do tempo previsto. As projeções não mentem.",
+            author: "Marcos & Ana",
+            role: "Juntos há 3 anos"
+          }
+        ].map((t, i) => (
+          <div key={i} className="p-8 rounded-3xl bg-[#0A0A0A] border border-white/5 relative">
+            <div className="absolute -top-4 left-8 text-6xl text-emerald-500 opacity-30 font-serif">"</div>
+            <p className="text-gray-300 mb-6 leading-relaxed relative z-10">
+              {t.quote}
+            </p>
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 border border-white/10" />
+              <div>
+                <div className="font-bold text-white">{t.author}</div>
+                <div className="text-xs text-gray-500 uppercase tracking-wider">{t.role}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
 
 const AdvisorSection = () => (
   <section id="advisor" className="py-32 relative overflow-hidden bg-[#0F1115]">
@@ -335,6 +462,81 @@ const AdvisorSection = () => (
   </section>
 );
 
+const Pricing = () => (
+  <section id="pricing" className="py-24 bg-[#0A0A0A] border-t border-white/5">
+    <div className="container mx-auto px-6">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+          Investimento que <span className="text-emerald-400">se paga.</span>
+        </h2>
+        <p className="text-xl text-gray-400">
+          Teste gratuitamente. Cancele quando quiser.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-center">
+        {/* Free Plan */}
+        <div className="p-8 rounded-3xl bg-white/5 border border-white/5 hover:border-white/20 transition-all">
+          <h3 className="text-2xl font-bold text-white mb-2">Plano Grátis</h3>
+          <div className="text-4xl font-bold text-white mb-6">R$ 0<span className="text-lg text-gray-500 font-normal">/mês</span></div>
+          <ul className="space-y-4 mb-8">
+            <li className="flex items-center gap-3 text-gray-400"><span className="text-white">✓</span> Conexão manual</li>
+            <li className="flex items-center gap-3 text-gray-400"><span className="text-white">✓</span> 3 Metas</li>
+            <li className="flex items-center gap-3 text-gray-400"><span className="text-white">✓</span> Dashboard Básico</li>
+          </ul>
+          <Link href="/register">
+            <button className="w-full py-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-all">
+              Começar Grátis
+            </button>
+          </Link>
+        </div>
+
+        {/* Pro Plan */}
+        <div className="p-8 rounded-3xl bg-[#0F1115] border border-emerald-500/50 relative transform md:scale-105 shadow-2xl shadow-emerald-900/20">
+          <div className="absolute top-0 center py-1 px-3 bg-emerald-500 text-black text-xs font-bold uppercase tracking-wider rounded-b-lg left-1/2 -translate-x-1/2">
+            Mais Popular
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-2">Casal Pro</h3>
+          <div className="text-4xl font-bold text-white mb-6">R$ 29,90<span className="text-lg text-gray-500 font-normal">/mês</span></div>
+          <ul className="space-y-4 mb-8">
+            <li className="flex items-center gap-3 text-white"><span className="text-emerald-400">✓</span> IA Advisor Ilimitado</li>
+            <li className="flex items-center gap-3 text-white"><span className="text-emerald-400">✓</span> Sincronização Automática</li>
+            <li className="flex items-center gap-3 text-white"><span className="text-emerald-400">✓</span> Metas Ilimitadas</li>
+            <li className="flex items-center gap-3 text-white"><span className="text-emerald-400">✓</span> Modo Casal Completo</li>
+          </ul>
+          <Link href="/register">
+            <button className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold transition-all shadow-lg shadow-emerald-500/20">
+              Testar 7 Dias Grátis
+            </button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const FAQ = () => (
+  <section className="py-24 bg-[#0F1115] border-t border-white/5">
+    <div className="container mx-auto px-6 max-w-3xl">
+      <h2 className="text-3xl font-bold text-center text-white mb-16">
+        Dúvidas Frequentes
+      </h2>
+      <div className="space-y-6">
+        {[
+          { q: "Meus dados bancários estão seguros?", a: "Absolutamente. Usamos criptografia de ponta a ponta (nível bancário) e não temos permissão para fazer movimentações, apenas leitura." },
+          { q: "Funciona para quem não mora junto?", a: "Sim! Vocês podem sincronizar as contas mesmo morando em casas (ou países) diferentes." },
+          { q: "Posso cancelar a qualquer momento?", a: "Sim, sem multas, sem letras miúdas. Você tem total liberdade." }
+        ].map((item, i) => (
+          <div key={i} className="p-6 rounded-2xl bg-[#0A0A0A] border border-white/5">
+            <h4 className="text-lg font-bold text-white mb-2">{item.q}</h4>
+            <p className="text-gray-400">{item.a}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
 const CTA = () => (
   <section className="py-32 relative overflow-hidden bg-emerald-900/20">
     <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-transparent to-[#0A0A0A]" />
@@ -388,7 +590,13 @@ export default function LandingPage() {
       <Navbar />
       <main>
         <Hero />
+        <SocialProof />
+        <Methodology />
         <Features />
+        <AdvisorSection />
+        <Testimonials />
+        <Pricing />
+        <FAQ />
         <CTA />
       </main>
       <Footer />
