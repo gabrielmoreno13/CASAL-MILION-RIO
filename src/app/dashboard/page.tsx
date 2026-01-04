@@ -24,21 +24,9 @@ export default function DashboardPage() {
                 action={
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        style={{
-                            padding: '0.75rem 1.5rem',
-                            backgroundColor: 'var(--primary)',
-                            color: 'var(--text-primary)',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontWeight: 600,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            cursor: 'pointer',
-                            boxShadow: 'var(--shadow-sm)'
-                        }}
+                        className="btn-gradient-primary flex items-center gap-2 px-6 py-3"
                     >
-                        <Plus size={18} /> Nova Despesa
+                        <Plus size={20} /> Nova Despesa
                     </button>
                 }
             />
