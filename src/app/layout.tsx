@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { GamificationProvider } from "@/contexts/GamificationContext";
+import { CoupleProvider } from "@/contexts/CoupleContext";
+import { FabMenu } from "@/components/layout/FabMenu";
 
 export const metadata: Metadata = {
   title: "Casal Milionário",
@@ -20,7 +23,12 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body>
-        {children}
+        <GamificationProvider>
+          <CoupleProvider>
+            {children}
+            <FabMenu />
+          </CoupleProvider>
+        </GamificationProvider>
       </body>
     </html>
   );

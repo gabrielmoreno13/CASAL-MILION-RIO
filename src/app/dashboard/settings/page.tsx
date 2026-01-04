@@ -22,14 +22,26 @@ export default function SettingsPage() {
                 </div>
 
                 <div className={styles.section}>
-                    <h3>Preferências</h3>
+                    <h3>Preferências do App</h3>
                     <div className={styles.toggleRow}>
-                        <span>Modo Escuro (Em breve)</span>
+                        <span>Modo Escuro</span>
                         <div className={styles.toggleStub}></div>
+                    </div>
+                    <div className={styles.toggleRow}>
+                        <span>Gamificação (Nível/XP)</span>
+                        <div className={`${styles.toggleStub} ${styles.active}`} style={{ background: '#10B981' }}></div>
+                    </div>
+                    <div className={styles.toggleRow}>
+                        <span>Visão de Casal Ativa</span>
+                        <div className={`${styles.toggleStub} ${styles.active}`} style={{ background: '#10B981' }}></div>
+                    </div>
+                    <div className={styles.toggleRow}>
+                        <span>Notificações Inteligentes (IA)</span>
+                        <div className={`${styles.toggleStub} ${styles.active}`} style={{ background: '#10B981' }}></div>
                     </div>
                 </div>
 
-                <p className={styles.version}>Versão 2.0.0 (Synetica Build)</p>
+                <p className={styles.version}>Versão 3.0.0 (V3 Update)</p>
             </div>
         </div>
     );

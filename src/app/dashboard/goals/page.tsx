@@ -7,6 +7,7 @@ import { Target, Trophy, Plus, Wallet } from 'lucide-react';
 import { AddGoalModal } from '@/components/goals/AddGoalModal';
 import styles from './Goals.module.css';
 import { formatCurrency } from '@/lib/utils';
+import { GoalTimeline } from '@/components/projections/GoalTimeline';
 
 export default function GoalsPage() {
     const supabase = createClient();
@@ -112,14 +113,22 @@ export default function GoalsPage() {
                 </div>
             </div>
 
-            {user && (
-                <AddGoalModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    onSuccess={() => setRefreshTrigger(prev => prev + 1)}
-                    user={user}
-                />
-            )}
-        </div>
+            {/* V3 Feature: Timeline */}
+            <div style={{ marginTop: '2rem' }}>
+                <GoalTimeline />
+            </div>
+
+
+            {
+                user && (
+                    <AddGoalModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onSuccess={() => setRefreshTrigger(prev => prev + 1)}
+                        user={user}
+                    />
+                )
+            }
+        </div >
     );
 }

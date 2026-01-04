@@ -8,9 +8,25 @@ import { DollarSign, TrendingUp, Target, CreditCard, ShoppingBag, ArrowUpRight }
 import styles from './Overview.module.css';
 import { NetWorthCard } from './NetWorthCard';
 import { EvolutionChart } from './EvolutionChart';
+import { LevelProgress } from '../gamification/LevelProgress';
+import { StreakCard } from '../gamification/StreakCard';
+import { AchievementsGrid } from '../gamification/Achievements';
+import { ViewToggle } from '../couple/ViewToggle';
+import { ContributionCard } from '../couple/ContributionCard';
+import { ActivityItem } from './ActivityItem';
+import { Bell } from 'lucide-react';
+import { useCouple } from '@/contexts/CoupleContext';
+import { ApprovalModal } from '../couple/ApprovalModal';
+import { DailySpendWidget } from '../investment-first/DailySpendWidget';
+import { InvestmentCalculator } from '../investment-first/InvestmentCalculator';
+import { InsightCard } from '../insights/InsightCard';
 
 export function DashboardOverview() {
     const supabase = createClient();
+    const { pendingApprovals } = useCouple();
+    const [selectedApproval, setSelectedApproval] = useState<any>(null);
+    const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
+
     const [metrics, setMetrics] = useState({
         netWorth: 0,
         invested: 0,
@@ -82,7 +98,56 @@ export function DashboardOverview() {
 
     return (
         <div className={styles.container}>
-            {/* Net Worth Header (V2) */}
+            {/* Header V3: Couple Toggle & Notifications */}
+            <div className="flex justify-between items-center mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Visão Geral</h1>
+                    <p className="text-gray-500 text-sm capitalize">
+                        {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                    </p>
+                </div>
+                <div className="flex items-center gap-2">
+                    {/* Mock Notification for Pending Approvals */}
+                    <div className="relative">
+                        <button
+                            className="p-2 text-gray-400 hover:text-gray-600 relative"
+                            onClick={() => {
+                                // For MVP demo: if pending exists, show first. 
+                                // Or use useCouple to trigger mock.
+                                if (pendingApprovals.length > 0) {
+                                    setSelectedApproval(pendingApprovals[0]);
+                                } else {
+                                    // Mock one for demo purposes if empty
+                                    setSelectedApproval({
+                                        id: 'demo-1',
+                                        amount: 3500,
+                                        category: 'Eletrônicos',
+                                        description: 'Novo PlayStation 6',
+                                        requestedBy: 'Parceiro',
+                                        status: 'pending'
+                                    });
+                                }
+                            }}
+                        >
+                            <Bell size={20} />
+                            {(pendingApprovals.length > 0 || true) && ( // Always show dot for demo
+                                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                            )}
+                        </button>
+                    </div>
+                    <ViewToggle />
+                </div>
+            </div>
+
+            <InsightCard />
+
+            {/* Level Bar (Gamification) */}
+            <LevelProgress />
+
+            <div className="mb-8">
+                <DailySpendWidget onClick={() => setIsCalculatorOpen(true)} />
+            </div>
+
             <NetWorthCard />
 
             {/* Metrics Grid */}
@@ -107,7 +172,13 @@ export function DashboardOverview() {
                     icon={<Target size={16} />}
                     footer="Objetivo Final"
                 />
+                <StreakCard />
             </div>
+
+            {/* Couple Contribution (Conditional) */}
+            <ContributionCard />
+
+            <AchievementsGrid />
 
             {/* Main Section: Chart & Activity */}
             <div className={styles.mainSection}>
@@ -130,14 +201,26 @@ export function DashboardOverview() {
                                     key={activity.id}
                                     title={activity.description}
                                     date={new Date(activity.date).toLocaleDateString('pt-BR')}
-                                    amount={`- ${formatCurrency((activity as any).amount)}`}
+                                    amount={(activity as any).amount}
                                     logoUrl={(activity as any).logo_url}
+                                    userName="Você" // Mock, needs DB update to store who made the transaction
                                 />
                             ))}
                         </div>
                     )}
                 </div>
             </div>
+
+            {selectedApproval && (
+                <ApprovalModal
+                    approval={selectedApproval}
+                    onClose={() => setSelectedApproval(null)}
+                />
+            )}
+
+            {isCalculatorOpen && (
+                <InvestmentCalculator onClose={() => setIsCalculatorOpen(false)} />
+            )}
         </div>
     );
 }
@@ -154,57 +237,4 @@ function MetricCard({ label, value, icon, footer }: any) {
     );
 }
 
-function ActivityItem({ title, date, amount, logoUrl }: any) {
-    // 1. If explicit logoUrl exists (and is http), use it
-    const [imgSrc, setImgSrc] = useState<string | null>(logoUrl?.startsWith('http') ? logoUrl : null);
-    const [imgError, setImgError] = useState(false);
 
-    useEffect(() => {
-        // If no explicit logo, try to guess from title
-        if (!logoUrl?.startsWith('http') && title && !imgError) {
-            // Common services mapping or heuristic
-            const lowerTitle = title.toLowerCase();
-            const services = ['netflix', 'spotify', 'amazon', 'uber', 'ifood', 'apple', 'google', 'nubank', 'inter', 'itaú', 'itau', 'bradesco', 'santander'];
-
-            const match = services.find(s => lowerTitle.includes(s));
-            if (match) {
-                // Special mapping for banks/services if needed, or just domain guess
-                let domain = `${match}.com`;
-                if (match === 'nubank') domain = 'nubank.com.br';
-                if (match === 'inter') domain = 'bancointer.com.br';
-                if (match === 'itaú' || match === 'itau') domain = 'itau.com.br';
-                if (match === 'ifood') domain = 'ifood.com.br';
-
-                setImgSrc(`https://logo.clearbit.com/${domain}`);
-            }
-        }
-    }, [title, logoUrl, imgError]);
-
-    return (
-        <div className={styles.activityItem}>
-            <div className={styles.activityIcon} style={{
-                backgroundColor: imgSrc && !imgError ? 'transparent' : '#F3F4F6',
-                fontSize: imgSrc && !imgError ? 'inherit' : '1.2rem',
-                overflow: 'hidden'
-            }}>
-                {imgSrc && !imgError ? (
-                    <img
-                        src={imgSrc}
-                        alt={title}
-                        style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
-                        onError={() => setImgError(true)}
-                    />
-                ) : (
-                    <span>{logoUrl && !logoUrl.startsWith('http') ? logoUrl : <ShoppingBag size={18} />}</span>
-                )}
-            </div>
-            <div className={styles.activityDetails}>
-                <div className={styles.activityTitle}>{title}</div>
-                <div className={styles.activityDate}>{date}</div>
-            </div>
-            <div className={styles.activityAmount} style={{ color: '#111827' }}>
-                {amount}
-            </div>
-        </div>
-    );
-}

@@ -6,6 +6,7 @@ import { Header } from '@/components/dashboard/Header';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import styles from './Simulator.module.css';
 import { formatCurrency } from '@/lib/utils';
+import { ScenarioChart } from '@/components/projections/ScenarioChart';
 
 export default function SimulatorPage() {
     // Default States (User edits these via sliders/inputs)
@@ -144,6 +145,11 @@ export default function SimulatorPage() {
                         <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: '#9CA3AF', textAlign: 'center' }}>
                             *Considerando inflação de 4.5% a.a. e regra dos 4%.
                         </p>
+
+                        {/* V3 Feature: Scenario Comparison */}
+                        <div style={{ marginTop: '2rem' }}>
+                            <ScenarioChart />
+                        </div>
                     </div>
                 </div>
             </div>
