@@ -126,7 +126,7 @@ export default function SimulatorPage() {
                                             width={80}
                                         />
                                         <Tooltip
-                                            formatter={(val: number) => formatCurrency(val)}
+                                            formatter={(val: any) => formatCurrency(Number(val))}
                                             labelFormatter={(label) => `Ano ${label}`}
                                         />
                                         <ReferenceLine y={result.fireNumber} label="Meta FIRE" stroke="#F59E0B" strokeDasharray="5 5" />
