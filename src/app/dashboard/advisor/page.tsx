@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Header } from '@/components/dashboard/Header';
 import { Send, User, Sparkles, Bot, TrendingUp } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
-import styles from './Advisor.module.css';
+
 
 interface Message {
     role: 'user' | 'assistant';
@@ -84,18 +84,19 @@ export default function AdvisorPage() {
     };
 
     return (
-        <div className="fade-in h-screen flex flex-col bg-gray-50 pb-20 md:pb-0"> {/* Padding bottom for mobile nav if exists */}
+        <div className="fade-in h-screen flex flex-col bg-[#0A0A0A] pb-20 md:pb-0">
             <Header title="Consultor IA" action={null} />
 
-            <div className={`flex-1 overflow-y-auto p-4 md:p-6 space-y-4 container mx-auto max-w-4xl`}>
-                <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex items-start gap-3 mb-6">
-                    <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 container mx-auto max-w-4xl scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                {/* Tip Card */}
+                <div className="bg-[#0F1115]/50 border border-emerald-500/20 rounded-xl p-4 flex items-start gap-4 mb-6 backdrop-blur-sm">
+                    <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-500 shrink-0">
                         <Sparkles size={20} />
                     </div>
                     <div>
-                        <h4 className="font-bold text-emerald-800 text-sm mb-1">Dica do dia</h4>
-                        <p className="text-emerald-700 text-sm">
-                            Lembre-se: O juro composto é a oitava maravilha do mundo. Comece cedo!
+                        <h4 className="font-bold text-white text-sm mb-1">Dica do dia</h4>
+                        <p className="text-gray-400 text-sm">
+                            Lembre-se: O juro composto é a oitava maravilha do mundo. Comece cedo e deixe o tempo trabalhar por você!
                         </p>
                     </div>
                 </div>
@@ -105,17 +106,17 @@ export default function AdvisorPage() {
                         key={i}
                         className={`flex mb-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
-                        <div className={`flex max-w-[85%] md:max-w-[70%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'} items-end gap-2`}>
+                        <div className={`flex max-w-[85%] md:max-w-[70%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'} items-end gap-3`}>
                             {/* Avatar */}
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-gray-200 text-gray-600' : 'bg-gray-900 text-emerald-400'
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border ${msg.role === 'user' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-white/5 border-white/10 text-emerald-400'
                                 }`}>
                                 {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
                             </div>
 
                             {/* Bubble */}
-                            <div className={`p-4 rounded-2xl shadow-sm text-sm md:text-base leading-relaxed ${msg.role === 'user'
-                                    ? 'bg-emerald-600 text-white rounded-br-none'
-                                    : 'bg-white text-gray-800 border border-gray-100 rounded-bl-none'
+                            <div className={`p-4 rounded-2xl text-sm md:text-base leading-relaxed border ${msg.role === 'user'
+                                ? 'bg-emerald-500 text-black font-medium rounded-br-none border-emerald-500'
+                                : 'bg-[#0F1115] text-gray-200 border-white/10 rounded-bl-none'
                                 }`}>
                                 {msg.content}
                             </div>
@@ -125,10 +126,10 @@ export default function AdvisorPage() {
 
                 {loading && (
                     <div className="flex justify-start mb-4">
-                        <div className="flex items-center gap-2 bg-white px-4 py-3 rounded-2xl border border-gray-100 ml-10">
-                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></span>
-                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></span>
+                        <div className="flex items-center gap-2 bg-[#0F1115] px-4 py-3 rounded-2xl border border-white/10 ml-11">
+                            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></span>
+                            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce delay-100"></span>
+                            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce delay-200"></span>
                         </div>
                     </div>
                 )}
@@ -137,7 +138,7 @@ export default function AdvisorPage() {
             </div>
 
             {/* Input Area */}
-            <div className="bg-white border-t border-gray-200 p-4">
+            <div className="bg-[#0A0A0A] border-t border-white/5 p-4 z-10">
                 <div className="container mx-auto max-w-4xl relative">
                     <input
                         type="text"
@@ -145,13 +146,13 @@ export default function AdvisorPage() {
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                         placeholder="Pergunte sobre investimentos, dívidas ou metas..."
-                        className="w-full bg-gray-100 text-gray-800 placeholder-gray-500 rounded-full py-4 pl-6 pr-14 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
+                        className="w-full bg-[#0F1115] text-white placeholder-gray-500 rounded-2xl py-4 pl-6 pr-14 border border-white/10 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-medium"
                         disabled={loading}
                     />
                     <button
                         onClick={handleSend}
                         disabled={loading || !input.trim()}
-                        className="absolute right-2 top-2 p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="absolute right-2 top-2 p-2 bg-emerald-500 hover:bg-emerald-400 text-black rounded-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                     >
                         <Send size={20} />
                     </button>
