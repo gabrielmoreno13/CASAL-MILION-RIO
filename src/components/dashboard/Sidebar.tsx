@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, Wallet, TrendingUp, Target, Settings, LogOut, Sparkles, Bot, MessageCircle } from 'lucide-react';
+import { LayoutDashboard, Wallet, TrendingUp, Target, Settings, LogOut, Sparkles, Bot, MessageCircle, Menu, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -24,6 +24,7 @@ export function Sidebar({ user: initialUser }: { user: any }) {
     const supabase = createClient();
     const [user, setUser] = useState(initialUser);
     const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     useEffect(() => {
         const getUser = async () => {
@@ -33,6 +34,11 @@ export function Sidebar({ user: initialUser }: { user: any }) {
         getUser();
     }, []);
 
+    // Close sidebar on navigation (mobile)
+    useEffect(() => {
+        setIsMobileOpen(false);
+    }, [pathname]);
+
     const handleLogout = async () => {
         await supabase.auth.signOut();
         router.push('/login');
@@ -40,7 +46,27 @@ export function Sidebar({ user: initialUser }: { user: any }) {
 
     return (
         <>
-            <aside className="fixed left-0 top-0 h-screen w-72 bg-[#0F1115] border-r border-white/5 flex flex-col z-40">
+            {/* Mobile Menu Trigger */}
+            <button
+                onClick={() => setIsMobileOpen(!isMobileOpen)}
+                className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-lg bg-[#0F1115] border border-white/10 text-white shadow-lg"
+            >
+                {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+
+            {/* Backdrop for Mobile */}
+            {isMobileOpen && (
+                <div
+                    className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden animate-fade-in"
+                    onClick={() => setIsMobileOpen(false)}
+                />
+            )}
+
+            <aside className={`
+                fixed left-0 top-0 h-screen w-72 bg-[#0F1115] border-r border-white/5 flex flex-col z-50
+                transition-transform duration-300 ease-in-out
+                ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+            `}>
                 <div className="p-6 border-b border-white/5 flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center font-bold text-black text-lg">
                         $

@@ -31,7 +31,7 @@ export default async function DashboardLayout({
        */}
             <Sidebar user={{ user_metadata: { full_name: 'Carregando...' } }} /> {/* Placeholder, Sidebar will fetch real data */}
 
-            <main className="ml-72 min-h-screen">
+            <main className="ml-0 md:ml-72 min-h-screen transition-all duration-300">
                 {children}
             </main>
         </div>
