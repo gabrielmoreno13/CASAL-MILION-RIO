@@ -6,9 +6,9 @@ import { formatCurrency } from '@/lib/utils';
 
 
 export function ContributionCard() {
-    const { partner1, partner2, viewMode } = useCouple();
+    const { partner1, partner2 } = useCouple();
 
-    if (viewMode !== 'couple' || !partner1 || !partner2) {
+    if (!partner1 || !partner2) {
         return null;
     }
 

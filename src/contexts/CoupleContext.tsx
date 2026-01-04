@@ -29,13 +29,11 @@ export interface CoupleState {
     coupleId: string | null;
     partner1: PartnerData | null;
     partner2: PartnerData | null;
-    viewMode: 'individual' | 'couple';
     pendingApprovals: Approval[];
     isLoading: boolean;
 }
 
 interface CoupleContextType extends CoupleState {
-    toggleViewMode: () => void;
     requestApproval: (amount: number, category: string, description: string) => Promise<void>;
     respondToApproval: (approvalId: string, status: 'approved' | 'rejected', comment?: string) => Promise<void>;
     refreshCoupleData: () => Promise<void>;
@@ -53,7 +51,6 @@ export function CoupleProvider({ children }: { children: React.ReactNode }) {
         coupleId: null,
         partner1: null,
         partner2: null,
-        viewMode: 'couple', // Default to couple view? Or individual? Prompt says "Visão Geral [Individual | Casal]"
         pendingApprovals: [],
         isLoading: true
     });
@@ -132,13 +129,6 @@ export function CoupleProvider({ children }: { children: React.ReactNode }) {
         fetchUserAndCouple();
     }, []);
 
-    const toggleViewMode = () => {
-        setState(prev => ({
-            ...prev,
-            viewMode: prev.viewMode === 'individual' ? 'couple' : 'individual'
-        }));
-    };
-
     const requestApproval = async (amount: number, category: string, description: string) => {
         // In real app, insert into 'approvals' table
         const newApproval: Approval = {
@@ -174,16 +164,29 @@ export function CoupleProvider({ children }: { children: React.ReactNode }) {
 
     const refreshCoupleData = async () => {
         // Re-fetch logic
+        // For now, implementing basic state refresh simulation or calling fetchUserAndCouple if refactored
+        console.log("Refreshing couple data...");
     };
 
     const inviteSpouse = async () => {
-        if (!userId) return null;
+        if (!userId) {
+            console.error("Invite Error: User not logged in");
+            return null;
+        }
 
+        // Generate a 6-character alphanumeric code
         const code = Math.random().toString(36).substring(2, 8).toUpperCase();
 
         try {
-            // Delete any existing invites for this user to keep it clean
-            await supabase.from('couple_invites').delete().eq('created_by', userId);
+            // Delete any existing invites for this user to keep it clean (Rule: 1 active invite per user)
+            const { error: deleteError } = await supabase
+                .from('couple_invites')
+                .delete()
+                .eq('created_by', userId);
+
+            if (deleteError) {
+                console.warn("Error clearing old invites (non-fatal):", deleteError);
+            }
 
             const { error } = await supabase
                 .from('couple_invites')
@@ -193,10 +196,14 @@ export function CoupleProvider({ children }: { children: React.ReactNode }) {
                     status: 'pending'
                 });
 
-            if (error) throw error;
+            if (error) {
+                console.error("Error creating invite:", error);
+                throw error;
+            }
+
             return code;
         } catch (err) {
-            console.error('Error creating invite:', err);
+            console.error('Unexpected error creating invite:', err);
             return null;
         }
     };
@@ -212,7 +219,10 @@ export function CoupleProvider({ children }: { children: React.ReactNode }) {
                 .eq('code', code.toUpperCase())
                 .single();
 
-            if (inviteError || !invite) throw new Error('Código inválido ou expirado.');
+            if (inviteError || !invite) {
+                console.error("Join Error: Invalid code", inviteError);
+                throw new Error('Código inválido ou expirado.');
+            }
 
             const partnerId = invite.created_by;
 
@@ -282,7 +292,7 @@ export function CoupleProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <CoupleContext.Provider value={{ ...state, toggleViewMode, requestApproval, respondToApproval, refreshCoupleData, inviteSpouse, joinCouple }}>
+        <CoupleContext.Provider value={{ ...state, requestApproval, respondToApproval, refreshCoupleData, inviteSpouse, joinCouple }}>
             {children}
         </CoupleContext.Provider>
     );
