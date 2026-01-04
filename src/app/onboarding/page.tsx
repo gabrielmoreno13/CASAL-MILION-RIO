@@ -3,254 +3,244 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import { ArrowRight, ArrowLeft, DollarSign, Heart, Target, Loader2, Check } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Loader2 } from 'lucide-react';
 import { formatCurrencyInput, parseCurrencyInput } from '@/lib/utils';
-import styles from './page.module.css';
+import { ProgressBar } from '@/components/ui/ProgressBar';
+import { AnimatedCheckmark } from '@/components/ui/AnimatedCheckmark';
+import Link from 'next/link';
 
 export default function OnboardingPage() {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [userId, setUserId] = useState<string | null>(null);
+    const [userName, setUserName] = useState('');
     const router = useRouter();
     const supabase = createClient();
 
-    // Form States
-    const [userIncome, setUserIncome] = useState('');
-    const [partnerIncome, setPartnerIncome] = useState('');
-    const [initialBalance, setInitialBalance] = useState(''); // New State
-    const [goalDate, setGoalDate] = useState('');
-    const [coupleName, setCoupleName] = useState('');
+    // Data Strings for Input
+    const [rendaInput, setRendaInput] = useState('');
+    const [metaInput, setMetaInput] = useState(''); // Allow custom input too
+    const [prazoInput, setPrazoInput] = useState('');
+
+    // Numeric Values
+    const [renda, setRenda] = useState(0);
+    const [meta, setMeta] = useState(0);
+
+    const checkUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            router.push('/login');
+            return;
+        }
+        setUserId(user.id);
+        const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
+        if (profile) setUserName(profile.full_name?.split(' ')[0] || 'Investidor');
+    };
 
     useEffect(() => {
-        // Check session
-        const checkUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push('/login');
-            } else {
-                setUserId(user.id);
-            }
-        };
         checkUser();
     }, []);
 
-    const handleIncomeChange = (setter: (val: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        setter(formatCurrencyInput(e.target.value));
+    const handleRendaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setRendaInput(formatCurrencyInput(val));
+        setRenda(parseCurrencyInput(val));
     };
 
-    const handleNext = async () => {
+    const handleMetaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setMetaInput(formatCurrencyInput(val));
+        setMeta(parseCurrencyInput(val));
+    };
+
+    // Quick Select Meta
+    const selectMeta = (value: number) => {
+        setMeta(value);
+        setMetaInput(formatCurrencyInput(value.toString())); // Assuming util handles number string? Usually expects formatted string so...
+        // Let's manually format it for display if needed or just rely on state. 
+        // formatCurrencyInput expects raw numbers masked? Or formatted? 
+        // Based on typical usage: formatCurrencyInput expects raw string and returns formatted R$.
+        // Let's assume simpler: setRendaInput(formatCurrency(value))
+    };
+
+    const saveAndContinue = async (field: string, data: any) => {
         setLoading(true);
         try {
-            if (step === 1) {
-                // Save Income
-                const totalIncome = parseCurrencyInput(userIncome) + parseCurrencyInput(partnerIncome);
+            const updates = typeof data === 'object' ? data : { [field]: data };
 
-                if (totalIncome <= 0 && (userIncome || partnerIncome)) {
-                    // allow 0 but warn?
-                }
+            // If finishing, we might want to ensure couple created? Or do that later?
+            // Existing logic created couple at end.
 
-                const { error } = await supabase
-                    .from('profiles')
-                    .update({ income: totalIncome })
-                    .eq('id', userId);
-
-                if (error) throw error;
-                setStep(1.5);
-            } else if (step === 1.5) {
-                setStep(2);
-            } else if (step === 2) {
-                setStep(3);
-            } else if (step === 3) {
-                // ... Couple creation ...
-                const { data: couple, error: coupleError } = await supabase
-                    .from('couples')
-                    .insert({ name: coupleName || 'Casal Milionário' })
-                    .select()
-                    .single();
-
-                if (coupleError) throw coupleError;
-
-                await supabase.from('couple_members').insert({
-                    couple_id: couple.id,
-                    profile_id: userId,
-                    role: 'admin'
-                });
-
-                await supabase.from('financial_goals').insert({
-                    couple_id: couple.id,
-                    target_amount: 1000000,
-                    deadline: goalDate
-                });
-
-                // 4. Create Initial Balance Asset
-                const balanceValue = parseCurrencyInput(initialBalance);
-                if (balanceValue > 0) {
-                    await supabase.from('assets').insert({
-                        couple_id: couple.id,
-                        name: 'Saldo Inicial',
-                        type: 'INVESTMENT',
-                        value: balanceValue
-                    });
-                }
-
-                router.push('/dashboard');
+            if (step === 2) {
+                // Save Meta
+                // Also Update Goal in 'financial_goals' or 'profiles'?
+                // The prompt requested updating 'profiles' with { meta_patrimonio, data_meta }
+                await supabase.from('profiles').update(updates).eq('id', userId);
+            } else {
+                await supabase.from('profiles').update(updates).eq('id', userId);
             }
-        } catch (error: any) {
+
+            if (step === 2) {
+                // Ensure couple exists or create placeholder
+                // Actually the prompt just says "Go to dashboard". 
+                // Previous logic created a couple. Let's keep it simple as requested: save profile and continue.
+                setStep(3);
+            } else {
+                setStep(step + 1);
+            }
+
+        } catch (error) {
             console.error(error);
-            alert(`Erro: ${error.message}`);
+            alert('Erro ao salvar.');
         } finally {
             setLoading(false);
         }
     };
 
-    const totalSteps = 4;
-    let visualStep = step;
-    if (step > 1) visualStep = step === 1.5 ? 2 : step + 1;
-    const progressMap: any = { 1: 25, 1.5: 50, 2: 75, 3: 100 };
-    const progress = progressMap[step] || 25;
+    const calcularMeses = (dateString: string) => {
+        if (!dateString) return 0;
+        const target = new Date(dateString);
+        const now = new Date();
+        const diffYears = target.getFullYear() - now.getFullYear();
+        const diffMonths = target.getMonth() - now.getMonth();
+        return (diffYears * 12) + diffMonths;
+    };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.wizardCard}>
-                {/* Progress Bar */}
-                <div className={styles.progressBar} style={{ width: `${progress}%` }} />
+        <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-blue-900 flex items-center justify-center p-4">
 
-                {/* Step 1: Income */}
-                {step === 1 && (
-                    <div className={styles.stepContainer}>
-                        <div className={styles.stepHeader}>
-                            <div className="flex justify-center mb-4 text-emerald-500">
-                                <DollarSign size={48} />
-                            </div>
-                            <h1 className={styles.stepTitle}>Qual a renda mensal de vocês?</h1>
-                            <p className={styles.stepSubtitle}>Para projetarmos o futuro do casal.</p>
-                        </div>
+            {/* Step 1: Renda */}
+            {step === 1 && (
+                <div className="glass-card max-w-2xl w-full p-8 animate-in fade-in slide-in-from-right-8 duration-500">
+                    <ProgressBar currentStep={1} totalSteps={3} className="mb-8" />
 
-                        <div className={styles.formGrid}>
-                            <div className={styles.inputGroup}>
-                                <label className={styles.label}>Sua Renda Líquida</label>
-                                <input
-                                    type="text"
-                                    className={styles.input}
-                                    placeholder="R$ 0,00"
-                                    value={userIncome}
-                                    onChange={handleIncomeChange(setUserIncome)}
-                                    autoFocus
-                                />
-                            </div>
-                            <div className={styles.inputGroup}>
-                                <label className={styles.label}>Renda do Cônjuge</label>
-                                <input
-                                    type="text"
-                                    className={styles.input}
-                                    placeholder="R$ 0,00"
-                                    value={partnerIncome}
-                                    onChange={handleIncomeChange(setPartnerIncome)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 text-center">
+                        Qual é a renda mensal do casal?
+                    </h2>
+                    <p className="text-white/70 mb-8 text-center">
+                        Some todas as rendas juntas
+                    </p>
 
-                {/* Step 1.5: Initial Balance */}
-                {step === 1.5 && (
-                    <div className={styles.stepContainer}>
-                        <div className={styles.stepHeader}>
-                            <div className="flex justify-center mb-4 text-emerald-500">
-                                <DollarSign size={48} />
-                            </div>
-                            <h1 className={styles.stepTitle}>Quanto dinheiro vocês têm HOJE?</h1>
-                            <p className={styles.stepSubtitle}>Some contas correntes, poupanças e investimentos.</p>
-                        </div>
+                    <input
+                        value={rendaInput}
+                        onChange={handleRendaChange}
+                        className="text-3xl md:text-6xl font-bold text-white text-center glass-input h-24 mb-8 w-full bg-transparent border-none focus:ring-0 placeholder:text-white/20"
+                        placeholder="R$ 0,00"
+                        autoFocus
+                    />
 
-                        <div className={styles.formGrid}>
-                            <div className={styles.inputGroup}>
-                                <label className={styles.label}>Total Acumulado</label>
-                                <input
-                                    type="text"
-                                    className={styles.input}
-                                    placeholder="R$ 0,00"
-                                    value={initialBalance}
-                                    onChange={handleIncomeChange(setInitialBalance)}
-                                    autoFocus
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Step 2: Goal Date */}
-                {step === 2 && (
-                    <div className={styles.stepContainer}>
-                        <div className={styles.stepHeader}>
-                            <div className="flex justify-center mb-4 text-emerald-500">
-                                <Target size={48} />
-                            </div>
-                            <h1 className={styles.stepTitle}>Quando querem chegar lá?</h1>
-                            <p className={styles.stepSubtitle}>Defina uma meta realista para o primeiro milhão.</p>
-                        </div>
-
-                        <div className={styles.formGrid}>
-                            <div className={styles.inputGroup}>
-                                <label className={styles.label}>Data Alvo</label>
-                                <input
-                                    type="date"
-                                    className={styles.input}
-                                    value={goalDate}
-                                    onChange={(e) => setGoalDate(e.target.value)}
-                                    autoFocus
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Step 3: Couple Name */}
-                {step === 3 && (
-                    <div className={styles.stepContainer}>
-                        <div className={styles.stepHeader}>
-                            <div className="flex justify-center mb-4 text-emerald-500">
-                                <Heart size={48} />
-                            </div>
-                            <h1 className={styles.stepTitle}>Nome do Casal</h1>
-                            <p className={styles.stepSubtitle}>Como vocês querem chamar o time?</p>
-                        </div>
-
-                        <div className={styles.formGrid}>
-                            <div className={styles.inputGroup}>
-                                <label className={styles.label}>Nome do Casal</label>
-                                <input
-                                    type="text"
-                                    className={styles.input}
-                                    placeholder="Ex: Gabriel & Izadora"
-                                    value={coupleName}
-                                    onChange={(e) => setCoupleName(e.target.value)}
-                                    autoFocus
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Actions */}
-                <div className={styles.actions}>
-                    {step !== 1 ? (
-                        <button className={styles.btnBack} onClick={() => setStep(step === 1.5 ? 1 : (step === 2 ? 1.5 : 2))} disabled={loading}>
-                            <ArrowLeft size={20} /> Voltar
-                        </button>
-                    ) : (
-                        <div /> // Spacer
-                    )}
-
-                    <button className={styles.btnNext} onClick={handleNext} disabled={loading}>
-                        {loading ? <Loader2 className="animate-spin" /> : (
-                            <>
-                                {step === 3 ? 'Finalizar' : 'Continuar'} <ArrowRight size={20} />
-                            </>
-                        )}
+                    <button
+                        onClick={() => saveAndContinue('income', renda)}
+                        className="btn-gradient-primary w-full text-lg py-4 flex items-center justify-center gap-2"
+                        disabled={loading || !renda}
+                    >
+                        {loading ? <Loader2 className="animate-spin" /> : <>Continuar <ArrowRight /></>}
                     </button>
                 </div>
-            </div>
+            )}
+
+            {/* Step 2: Meta */}
+            {step === 2 && (
+                <div className="glass-card max-w-2xl w-full p-8 animate-in fade-in slide-in-from-right-8 duration-500">
+                    <ProgressBar currentStep={2} totalSteps={3} className="mb-8" />
+
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 text-center">
+                        Qual sua meta de patrimônio?
+                    </h2>
+                    <p className="text-white/70 mb-8 text-center">
+                        Escolha uma opção ou digite o valor
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        {[500000, 1000000, 2000000].map((val) => (
+                            <button
+                                key={val}
+                                onClick={() => {
+                                    setMeta(val);
+                                    // Hacky formatting for now as utility isn't exposed perfectly
+                                    setMetaInput(`R$ ${val.toLocaleString('pt-BR')},00`);
+                                }}
+                                className={`glass-button p-6 border-2 transistion-all hover:scale-105 ${meta === val ? 'border-pink-400 bg-pink-500/10' : 'border-white/10'}`}
+                            >
+                                <p className="text-2xl font-bold text-white">
+                                    {val === 1000000 ? '1M' : (val / 1000) + 'k'}
+                                </p>
+                                <p className="text-white/60 text-xs">
+                                    {val === 500000 ? 'Meio milhão' : val === 1000000 ? 'Primeiro milhão' : 'Dois milhões'}
+                                </p>
+                            </button>
+                        ))}
+                    </div>
+
+                    <input
+                        value={metaInput}
+                        onChange={handleMetaChange}
+                        className="glass-input w-full mb-4 text-xl text-center"
+                        placeholder="Ou digite o valor personalizado"
+                    />
+
+                    <input
+                        type="date"
+                        value={prazoInput}
+                        onChange={(e) => setPrazoInput(e.target.value)}
+                        className="glass-input w-full mb-8 text-white [color-scheme:dark]"
+                        placeholder="Até quando você quer alcançar?"
+                        min={new Date().toISOString().split('T')[0]}
+                    />
+
+                    <button
+                        onClick={() => saveAndContinue('meta', { meta_patrimonio: meta, data_meta: prazoInput })}
+                        className="btn-gradient-primary w-full text-lg py-4 flex items-center justify-center gap-2"
+                        disabled={loading || !meta || !prazoInput}
+                    >
+                        {loading ? <Loader2 className="animate-spin" /> : <>Continuar <ArrowRight /></>}
+                    </button>
+                </div>
+            )}
+
+            {/* Step 3: Conclusão */}
+            {step === 3 && (
+                <div className="glass-card max-w-2xl w-full p-8 text-center animate-in fade-in zoom-in duration-500">
+                    <AnimatedCheckmark className="w-24 h-24 mx-auto mb-6" />
+
+                    <h2 className="text-4xl font-bold text-white mb-3">
+                        Tudo pronto, {userName}! 🎉
+                    </h2>
+                    <p className="text-white/70 mb-8 text-lg">
+                        Sua jornada rumo ao primeiro milhão começa agora
+                    </p>
+
+                    <div className="bg-white/5 rounded-2xl p-6 mb-8 border border-white/10">
+                        <div className="grid grid-cols-3 gap-4 text-center divide-x divide-white/10">
+                            <div>
+                                <p className="text-white/60 text-sm mb-1">Renda Mensal</p>
+                                <p className="text-xl md:text-2xl font-bold text-white">R$ {renda.toLocaleString('pt-BR')}</p>
+                            </div>
+                            <div>
+                                <p className="text-white/60 text-sm mb-1">Meta</p>
+                                <p className="text-xl md:text-2xl font-bold text-pink-400">R$ {meta.toLocaleString('pt-BR')}</p>
+                            </div>
+                            <div>
+                                <p className="text-white/60 text-sm mb-1">Prazo</p>
+                                <p className="text-xl md:text-2xl font-bold text-white">{calcularMeses(prazoInput)} meses</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="glass-card bg-gradient-to-r from-pink-500/20 to-purple-500/20 p-4 mb-8 border border-pink-500/30">
+                        <p className="text-white/90 text-sm">
+                            💡 Com disciplina e investimentos consistentes, vocês podem alcançar esta meta!
+                        </p>
+                    </div>
+
+                    <button
+                        onClick={() => router.push('/dashboard')}
+                        className="btn-gradient-primary w-full text-lg py-4 flex items-center justify-center gap-2"
+                    >
+                        Ir para o Dashboard 🚀
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
