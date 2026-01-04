@@ -107,8 +107,8 @@ export function AddGoalModal({ isOpen, onClose, onSuccess, user }: AddGoalModalP
                                     type="button"
                                     onClick={() => handleSuggestionClick(goal)}
                                     className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${selectedSuggestion === goal.name
-                                            ? 'bg-emerald-500/10 border-emerald-500/50'
-                                            : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'
+                                        ? 'bg-emerald-500/10 border-emerald-500/50'
+                                        : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'
                                         }`}
                                 >
                                     <div className={`p-2 rounded-lg bg-gradient-to-br ${goal.color} text-white`}>
@@ -175,7 +175,7 @@ export function AddGoalModal({ isOpen, onClose, onSuccess, user }: AddGoalModalP
                                     type="date"
                                     value={date}
                                     onChange={e => setDate(e.target.value)}
-                                    className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white focus:outline-none focus:border-emerald-500 transition-colors bg-opacity-100" // Ensure calendar icon is visible/usable
+                                    className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white focus:outline-none focus:border-emerald-500 transition-colors [color-scheme:dark]"
                                 />
                             </div>
 

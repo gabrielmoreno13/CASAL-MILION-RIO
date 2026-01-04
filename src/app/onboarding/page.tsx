@@ -19,11 +19,13 @@ export default function OnboardingPage() {
 
     // Data Strings for Input
     const [rendaInput, setRendaInput] = useState('');
-    const [metaInput, setMetaInput] = useState(''); // Allow custom input too
+    const [partnerRendaInput, setPartnerRendaInput] = useState('');
+    const [metaInput, setMetaInput] = useState('');
     const [prazoInput, setPrazoInput] = useState('');
 
     // Numeric Values
-    const [renda, setRenda] = useState(0);
+    const [userRenda, setUserRenda] = useState(0);
+    const [partnerRenda, setPartnerRenda] = useState(0);
     const [meta, setMeta] = useState(0);
 
     const checkUser = async () => {
@@ -41,10 +43,16 @@ export default function OnboardingPage() {
         checkUser();
     }, []);
 
-    const handleRendaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleUserRendaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setRendaInput(formatCurrencyInput(val));
-        setRenda(parseCurrencyInput(val));
+        setUserRenda(parseCurrencyInput(val));
+    };
+
+    const handlePartnerRendaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setPartnerRendaInput(formatCurrencyInput(val));
+        setPartnerRenda(parseCurrencyInput(val));
     };
 
     const handleMetaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,40 +61,35 @@ export default function OnboardingPage() {
         setMeta(parseCurrencyInput(val));
     };
 
-    // Quick Select Meta
-    const selectMeta = (value: number) => {
-        setMeta(value);
-        setMetaInput(formatCurrencyInput(value.toString())); // Assuming util handles number string? Usually expects formatted string so...
-        // Let's manually format it for display if needed or just rely on state. 
-        // formatCurrencyInput expects raw numbers masked? Or formatted? 
-        // Based on typical usage: formatCurrencyInput expects raw string and returns formatted R$.
-        // Let's assume simpler: setRendaInput(formatCurrency(value))
-    };
+    // Total Income Calculation
+    const totalRenda = userRenda + partnerRenda;
 
-    const saveAndContinue = async (field: string, data: any) => {
+    const handleContinue = async (currentStep: number) => {
         setLoading(true);
         try {
-            const updates = typeof data === 'object' ? data : { [field]: data };
-
-            // If finishing, we might want to ensure couple created? Or do that later?
-            // Existing logic created couple at end.
-
-            if (step === 2) {
-                // Save Meta
-                // Also Update Goal in 'financial_goals' or 'profiles'?
-                // The prompt requested updating 'profiles' with { meta_patrimonio, data_meta }
-                await supabase.from('profiles').update(updates).eq('id', userId);
-            } else {
-                await supabase.from('profiles').update(updates).eq('id', userId);
+            // Step 1: User Income (Just local state or save?)
+            // We'll save just local state for now until Step 2 completes total income
+            if (currentStep === 1) {
+                setStep(2);
+                setLoading(false);
+                return;
             }
 
-            if (step === 2) {
-                // Ensure couple exists or create placeholder
-                // Actually the prompt just says "Go to dashboard". 
-                // Previous logic created a couple. Let's keep it simple as requested: save profile and continue.
+            // Step 2: Partner Income -> Save Total Income
+            if (currentStep === 2) {
+                await supabase.from('profiles').update({ income: totalRenda }).eq('id', userId);
                 setStep(3);
-            } else {
-                setStep(step + 1);
+                setLoading(false);
+                return;
+            }
+
+            // Step 3: Meta -> Save Meta
+            if (currentStep === 3) {
+                await supabase.from('profiles').update({
+                    meta_patrimonio: meta,
+                    data_meta: prazoInput
+                }).eq('id', userId);
+                setStep(4);
             }
 
         } catch (error) {
@@ -109,40 +112,95 @@ export default function OnboardingPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-blue-900 flex items-center justify-center p-4">
 
-            {/* Step 1: Renda */}
+            {/* Step 1: User Renda */}
             {step === 1 && (
                 <div className="glass-card max-w-2xl w-full p-8 animate-in fade-in slide-in-from-right-8 duration-500">
-                    <ProgressBar currentStep={1} totalSteps={3} className="mb-8" />
+                    <ProgressBar currentStep={1} totalSteps={4} className="mb-8" />
 
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 text-center">
-                        Qual é a renda mensal do casal?
+                        Qual é a <span className="text-emerald-400">sua</span> renda mensal?
                     </h2>
                     <p className="text-white/70 mb-8 text-center">
-                        Some todas as rendas juntas
+                        Seu salário ou ganhos mensais aproximados
                     </p>
 
                     <input
                         value={rendaInput}
-                        onChange={handleRendaChange}
+                        onChange={handleUserRendaChange}
                         className="text-3xl md:text-6xl font-bold text-white text-center glass-input h-24 mb-8 w-full bg-transparent border-none focus:ring-0 placeholder:text-white/20"
                         placeholder="R$ 0,00"
                         autoFocus
                     />
 
                     <button
-                        onClick={() => saveAndContinue('income', renda)}
+                        onClick={() => handleContinue(1)}
                         className="btn-gradient-primary w-full text-lg py-4 flex items-center justify-center gap-2"
-                        disabled={loading || !renda}
+                        disabled={loading || !userRenda}
                     >
                         {loading ? <Loader2 className="animate-spin" /> : <>Continuar <ArrowRight /></>}
                     </button>
                 </div>
             )}
 
-            {/* Step 2: Meta */}
+            {/* Step 2: Partner Renda */}
             {step === 2 && (
                 <div className="glass-card max-w-2xl w-full p-8 animate-in fade-in slide-in-from-right-8 duration-500">
-                    <ProgressBar currentStep={2} totalSteps={3} className="mb-8" />
+                    <ProgressBar currentStep={2} totalSteps={4} className="mb-8" />
+
+                    <button
+                        onClick={() => setStep(1)}
+                        className="absolute top-8 left-8 text-white/50 hover:text-white transition-colors"
+                    >
+                        <ArrowLeft />
+                    </button>
+
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 text-center">
+                        E a renda do seu <span className="text-pink-400">amor</span>?
+                    </h2>
+                    <p className="text-white/70 mb-8 text-center">
+                        Se não tiver ou não souber agora, pode deixar zerado
+                    </p>
+
+                    <input
+                        value={partnerRendaInput}
+                        onChange={handlePartnerRendaChange}
+                        className="text-3xl md:text-6xl font-bold text-white text-center glass-input h-24 mb-8 w-full bg-transparent border-none focus:ring-0 placeholder:text-white/20"
+                        placeholder="R$ 0,00"
+                        autoFocus
+                    />
+
+                    <div className="space-y-4">
+                        <button
+                            onClick={() => handleContinue(2)}
+                            className="btn-gradient-primary w-full text-lg py-4 flex items-center justify-center gap-2"
+                            disabled={loading}
+                        >
+                            {loading ? <Loader2 className="animate-spin" /> : <>Somar Rendas <ArrowRight /></>}
+                        </button>
+
+                        {!partnerRenda && (
+                            <button
+                                onClick={() => handleContinue(2)}
+                                className="w-full text-white/50 hover:text-white py-2 text-sm transition-colors"
+                            >
+                                Pular / Não tenho parceiro(a)
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Step 3: Meta */}
+            {step === 3 && (
+                <div className="glass-card max-w-2xl w-full p-8 animate-in fade-in slide-in-from-right-8 duration-500">
+                    <ProgressBar currentStep={3} totalSteps={4} className="mb-8" />
+
+                    <button
+                        onClick={() => setStep(2)}
+                        className="absolute top-8 left-8 text-white/50 hover:text-white transition-colors"
+                    >
+                        <ArrowLeft />
+                    </button>
 
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 text-center">
                         Qual sua meta de patrimônio?
@@ -157,7 +215,6 @@ export default function OnboardingPage() {
                                 key={val}
                                 onClick={() => {
                                     setMeta(val);
-                                    // Hacky formatting for now as utility isn't exposed perfectly
                                     setMetaInput(`R$ ${val.toLocaleString('pt-BR')},00`);
                                 }}
                                 className={`glass-button p-6 border-2 transistion-all hover:scale-105 ${meta === val ? 'border-pink-400 bg-pink-500/10' : 'border-white/10'}`}
@@ -189,7 +246,7 @@ export default function OnboardingPage() {
                     />
 
                     <button
-                        onClick={() => saveAndContinue('meta', { meta_patrimonio: meta, data_meta: prazoInput })}
+                        onClick={() => handleContinue(3)}
                         className="btn-gradient-primary w-full text-lg py-4 flex items-center justify-center gap-2"
                         disabled={loading || !meta || !prazoInput}
                     >
@@ -198,8 +255,8 @@ export default function OnboardingPage() {
                 </div>
             )}
 
-            {/* Step 3: Conclusão */}
-            {step === 3 && (
+            {/* Step 4: Conclusão */}
+            {step === 4 && (
                 <div className="glass-card max-w-2xl w-full p-8 text-center animate-in fade-in zoom-in duration-500">
                     <AnimatedCheckmark className="w-24 h-24 mx-auto mb-6" />
 
@@ -213,8 +270,8 @@ export default function OnboardingPage() {
                     <div className="bg-white/5 rounded-2xl p-6 mb-8 border border-white/10">
                         <div className="grid grid-cols-3 gap-4 text-center divide-x divide-white/10">
                             <div>
-                                <p className="text-white/60 text-sm mb-1">Renda Mensal</p>
-                                <p className="text-xl md:text-2xl font-bold text-white">R$ {renda.toLocaleString('pt-BR')}</p>
+                                <p className="text-white/60 text-sm mb-1">Renda Casal</p>
+                                <p className="text-xl md:text-2xl font-bold text-white">R$ {totalRenda.toLocaleString('pt-BR')}</p>
                             </div>
                             <div>
                                 <p className="text-white/60 text-sm mb-1">Meta</p>

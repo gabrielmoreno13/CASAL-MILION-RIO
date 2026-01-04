@@ -39,9 +39,9 @@ export function Header({ title, subtitle, action }: HeaderProps) {
 
     return (
         <>
-            <header className="flex items-center justify-between py-6 px-1 mb-6 pl-14 md:pl-1">
-                <div className="flex flex-col">
-                    <h1 className="text-3xl font-bold text-white mb-1">{title}</h1>
+            <header className="flex flex-col md:flex-row md:items-center justify-between py-6 px-1 mb-6 pl-14 md:pl-1 gap-4 md:gap-0">
+                <div className="flex flex-col pr-12 md:pr-0">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-1 leading-tight">{title}</h1>
                     {subtitle ? (
                         <span className="text-sm text-gray-400">{subtitle}</span>
                     ) : (
