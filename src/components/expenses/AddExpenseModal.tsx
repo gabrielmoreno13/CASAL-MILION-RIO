@@ -41,7 +41,7 @@ export function AddExpenseModal({ isOpen, onClose, onSuccess, user }: any) {
         if (splitData && amount) {
             const numericAmount = parseFloat(amount.replace(/[^0-9.]/g, '')) || 0;
             const split = EquitySplitter.splitExpense(numericAmount, splitData.userIncome, splitData.partnerIncome);
-            setSplitData(prev => ({ ...prev, ...split }));
+            setSplitData((prev: any) => ({ ...prev, ...split }));
         }
     }, [amount]);
 

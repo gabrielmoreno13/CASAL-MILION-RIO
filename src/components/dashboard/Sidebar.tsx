@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, Wallet, TrendingUp, Target, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Wallet, TrendingUp, Target, Settings, LogOut, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
