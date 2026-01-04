@@ -58,7 +58,7 @@ export function AddAssetModal({ isOpen, onClose, onSuccess, user }: AddAssetModa
             onClose();
             setName('');
             setAmount('');
-        } catch (error) {
+        } catch (error: any) {
             alert('Erro ao salvar ativo');
             console.error(error);
         } finally {

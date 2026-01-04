@@ -50,7 +50,7 @@ export function AddGoalModal({ isOpen, onClose, onSuccess, user }: AddGoalModalP
                 setTarget('');
                 setCurrent('');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
             alert('Erro ao criar meta.');
         } finally {

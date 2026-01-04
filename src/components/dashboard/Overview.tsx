@@ -64,7 +64,7 @@ export function DashboardOverview() {
                     monthlyIncome: profile?.income || 0
                 });
                 setRecentActivity(expenses);
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Error fetching dashboard data:', error);
             } finally {
                 setLoading(false);
