@@ -15,12 +15,23 @@ export function InviteSpouseModal({ isOpen, onClose }: InviteSpouseModalProps) {
     const [inviteCode, setInviteCode] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleGenerate = async () => {
         setLoading(true);
-        const code = await inviteSpouse();
-        setInviteCode(code);
-        setLoading(false);
+        setError(null);
+        try {
+            const code = await inviteSpouse();
+            if (code) {
+                setInviteCode(code);
+            } else {
+                setError("Não foi possível gerar o código. Tente novamente.");
+            }
+        } catch (e) {
+            setError("Erro ao se conectar. Verifique sua internet.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const copyToClipboard = () => {
@@ -79,10 +90,17 @@ export function InviteSpouseModal({ isOpen, onClose }: InviteSpouseModalProps) {
                                     Seus dados são criptografados de ponta a ponta. Você controla o que compartilha.
                                 </div>
                             </div>
+
+                            {error && (
+                                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs text-center">
+                                    {error}
+                                </div>
+                            )}
+
                             <button
                                 onClick={handleGenerate}
                                 disabled={loading}
-                                className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+                                className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? 'Gerando...' : 'Gerar Código de Convite'}
                             </button>

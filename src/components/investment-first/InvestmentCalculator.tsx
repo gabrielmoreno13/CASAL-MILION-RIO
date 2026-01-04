@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, DollarSign, Calculator } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
@@ -14,9 +14,37 @@ export function InvestmentCalculator({ onClose }: Props) {
     const [fixedExpenses, setFixedExpenses] = useState(5000);
     const [investmentGoalPercent, setInvestmentGoalPercent] = useState(20);
 
+    // Load saved settings
+    useEffect(() => {
+        const saved = localStorage.getItem('investment_calculator_settings');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                setIncome(parsed.income || 10000);
+                setFixedExpenses(parsed.fixedExpenses || 5000);
+                setInvestmentGoalPercent(parsed.investmentGoalPercent || 20);
+            } catch (e) {
+                console.error('Failed to parse settings', e);
+            }
+        }
+    }, []);
+
     const investmentAmount = (income * investmentGoalPercent) / 100;
     const remainingForMonth = income - fixedExpenses - investmentAmount;
     const dailyBudget = remainingForMonth / 30;
+
+    const handleSave = () => {
+        const settings = {
+            income,
+            fixedExpenses,
+            investmentGoalPercent,
+            dailyBudget, // Save the result too for easier access
+            lastUpdated: new Date().toISOString()
+        };
+        localStorage.setItem('investment_calculator_settings', JSON.stringify(settings));
+        window.dispatchEvent(new Event('daily_budget_updated')); // Notify widget
+        onClose();
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200" onClick={onClose}>
@@ -88,10 +116,7 @@ export function InvestmentCalculator({ onClose }: Props) {
                 <div className="p-6 pt-0">
                     <button
                         className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
-                        onClick={() => {
-                            // In real app, save to settings context
-                            onClose();
-                        }}
+                        onClick={handleSave}
                     >
                         Aplicar Orçamento Inteligente
                     </button>

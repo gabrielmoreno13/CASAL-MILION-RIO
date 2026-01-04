@@ -4,7 +4,8 @@ import { formatCurrency } from '@/lib/utils';
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
-import { DollarSign, TrendingUp, Target, CreditCard, ShoppingBag, ArrowUpRight } from 'lucide-react';
+import { DollarSign, TrendingUp, Target, CreditCard, ShoppingBag, ArrowUpRight, Plus } from 'lucide-react';
+import Link from 'next/link';
 
 import { NetWorthCard } from './NetWorthCard';
 import { EvolutionChart } from './EvolutionChart';
@@ -146,8 +147,34 @@ export function DashboardOverview() {
             {/* Level Bar (Gamification) */}
             <LevelProgress />
 
-            <div className="w-full">
-                <DailySpendWidget onClick={() => setIsCalculatorOpen(true)} />
+            {/* Quick Actions Grid */}
+            <div className="grid md:grid-cols-2 gap-6">
+                {/* Register Asset CTA */}
+                <div className="bg-gradient-to-br from-emerald-900/40 to-black border border-emerald-500/20 rounded-3xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all" />
+
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                <TrendingUp size={20} />
+                            </div>
+                            <h3 className="text-lg font-bold text-white">Cadastre seu Patrimônio</h3>
+                        </div>
+
+                        <p className="text-gray-400 text-sm mb-6">
+                            Registre seus bens, investimentos e acompanhe a evolução da sua riqueza em tempo real.
+                        </p>
+
+                        <Link href="/dashboard/net-worth" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 text-black font-bold hover:bg-emerald-400 transition-colors">
+                            <Plus size={18} />
+                            Registrar Agora
+                        </Link>
+                    </div>
+                </div>
+
+                <div className="w-full">
+                    <DailySpendWidget onClick={() => setIsCalculatorOpen(true)} />
+                </div>
             </div>
 
             <NetWorthCard />
@@ -242,7 +269,6 @@ export function DashboardOverview() {
 }
 
 
-import Link from 'next/link';
 
 function MetricCard({ label, value, icon, footer, href, onClick }: any) {
     const content = (

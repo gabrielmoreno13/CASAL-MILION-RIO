@@ -2,12 +2,32 @@
 
 import { formatCurrency } from '@/lib/utils';
 import { Wallet } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 
 export function DailySpendWidget({ onClick }: { onClick?: () => void }) {
-    // Mock calculation logic for now. 
-    // In real app: Income - Fixed Expenses - Investment Goal / Days in month
-    const safeToSpend = 145.50;
+    const [safeToSpend, setSafeToSpend] = useState(145.50); // Default fallback
+
+    const updateBudget = () => {
+        try {
+            const saved = localStorage.getItem('investment_calculator_settings');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed.dailyBudget) {
+                    setSafeToSpend(parsed.dailyBudget);
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    useEffect(() => {
+        updateBudget();
+        // Listen for updates from the calculator
+        window.addEventListener('daily_budget_updated', updateBudget);
+        return () => window.removeEventListener('daily_budget_updated', updateBudget);
+    }, []);
 
     return (
         <div

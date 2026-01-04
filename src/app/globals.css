@@ -63,6 +63,17 @@ body {
   input[type="time"],
   input[type="datetime-local"] {
     color-scheme: dark;
+    color-scheme: dark;
+    color: white;
+    background-color: transparent;
+    opacity: 1;
+  }
+
+  /* Webkit specific fixes for mobile transparency */
+  ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 1;
+    cursor: pointer;
   }
 
   .glass-input {

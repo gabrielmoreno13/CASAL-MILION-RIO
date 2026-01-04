@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, Wallet, TrendingUp, Target, Settings, LogOut, Sparkles, Bot, MessageCircle, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Wallet, TrendingUp, Target, Settings, LogOut, Sparkles, Bot, MessageCircle, Menu, X, PieChart } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -12,6 +12,7 @@ import { WhatsAppModal } from '@/components/dashboard/WhatsAppModal';
 const MENU_ITEMS = [
     { icon: LayoutDashboard, label: 'Visão Geral', href: '/dashboard' },
     { icon: Wallet, label: 'Carteira', href: '/dashboard/wallet' },
+    { icon: PieChart, label: 'Patrimônio', href: '/dashboard/net-worth' },
     { icon: TrendingUp, label: 'Investimentos', href: '/dashboard/investments' },
     { icon: Target, label: 'Metas', href: '/dashboard/goals' },
     { icon: Bot, label: 'Consultor IA', href: '/dashboard/advisor' },

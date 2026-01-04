@@ -90,9 +90,11 @@ const Hero = () => {
               <ArrowRight size={20} />
             </button>
           </Link>
-          <button className="h-14 px-8 rounded-full bg-white/5 hover:bg-white/10 text-white border border-white/10 font-bold text-lg transition-all flex items-center gap-2">
-            Ver Demonstração
-          </button>
+          <Link href="/login">
+            <button className="h-14 px-8 rounded-full bg-white/5 hover:bg-white/10 text-white border border-white/10 font-bold text-lg transition-all flex items-center gap-2">
+              Ver Demonstração
+            </button>
+          </Link>
         </div>
       </motion.div>
 
