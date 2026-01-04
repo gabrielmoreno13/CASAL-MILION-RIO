@@ -81,9 +81,9 @@ export default function OnboardingPage() {
                 // Finish
                 router.push('/dashboard');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert(`Erro ao salvar: ${error.message || JSON.stringify(error)}`);
+            alert(`Erro ao salvar: ${error.message}`);
         } finally {
             setLoading(false);
         }
