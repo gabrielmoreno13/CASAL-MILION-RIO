@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, Wallet, TrendingUp, Target, Settings, LogOut, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Wallet, TrendingUp, Target, Settings, LogOut, Sparkles, Bot } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ const MENU_ITEMS = [
     { icon: Wallet, label: 'Carteira', href: '/dashboard/wallet' },
     { icon: TrendingUp, label: 'Investimentos', href: '/dashboard/investments' },
     { icon: Target, label: 'Metas', href: '/dashboard/goals' },
+    { icon: Bot, label: 'Consultor IA', href: '/dashboard/advisor' },
     { icon: Settings, label: 'Configurações', href: '/dashboard/settings' },
 ];
 
@@ -68,10 +69,7 @@ export function Sidebar({ user: initialUser }: { user: any }) {
                     <TrendingUp size={20} />
                     <span>Simulador FIRE</span>
                 </Link>
-                <Link href="/dashboard/insights" className={`${styles.navItem} ${pathname === '/dashboard/insights' ? styles.active : ''}`}>
-                    <Sparkles size={20} />
-                    <span>IA & Insights</span>
-                </Link>
+
             </nav>
 
             <div className={styles.userProfile}>

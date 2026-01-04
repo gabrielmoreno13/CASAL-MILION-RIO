@@ -235,6 +235,106 @@ const Features = () => {
   );
 };
 
+const AdvisorSection = () => (
+  <section id="advisor" className="py-32 relative overflow-hidden bg-[#0F1115]">
+    <div className="container mx-auto px-6 relative z-10">
+      <div className="flex flex-col lg:flex-row items-center gap-16">
+
+        {/* Text Content */}
+        <div className="flex-1 text-left">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold tracking-wider uppercase mb-6">
+            <Bot size={14} />
+            Inteligência Artificial Nativa
+          </div>
+
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+            Seu <span className="text-emerald-400">Diretor Financeiro</span> Pessoal, disponível 24/7.
+          </h2>
+
+          <p className="text-lg text-gray-400 mb-8 leading-relaxed">
+            Esqueça planilhas complicadas. Converse com o Mestre de Finanças para tomar decisões inteligentes em tempo real. Ele analisa seus dados e sugere onde cortar, onde investir e como atingir suas metas mais rápido.
+          </p>
+
+          <ul className="space-y-4 mb-10">
+            {[
+              "Análise de gastos em tempo real",
+              "Sugestões de investimento personalizadas",
+              "Alertas de orçamento estourado",
+              "Tira-dúvidas sobre dívidas e juros"
+            ].map((item, i) => (
+              <li key={i} className="flex items-center gap-3 text-gray-300">
+                <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <Link href="/register">
+            <button className="h-14 px-8 rounded-full bg-white text-black font-bold text-base transition-all hover:bg-gray-200">
+              Falar com o Mestre
+            </button>
+          </Link>
+        </div>
+
+        {/* Chat Simulation Visual */}
+        <div className="flex-1 w-full max-w-lg">
+          <div className="relative bg-[#1A1D21] border border-white/10 rounded-3xl p-6 shadow-2xl">
+            {/* Chat Header */}
+            <div className="flex items-center gap-4 mb-6 border-b border-white/5 pb-4">
+              <div className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center">
+                <Bot size={24} className="text-black" />
+              </div>
+              <div>
+                <div className="text-white font-bold">Mestre Financeiro</div>
+                <div className="text-emerald-400 text-xs flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  Online
+                </div>
+              </div>
+            </div>
+
+            {/* Chat Bubbles */}
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0 text-emerald-400">
+                  <Bot size={16} />
+                </div>
+                <div className="bg-white/5 p-4 rounded-2xl rounded-tl-none text-gray-300 text-sm leading-relaxed border border-white/5">
+                  Olá! Notei que vocês gastaram R$ 400 em delivery essa semana. Se reduzirem pela metade, isso vira R$ 10.000 em 5 anos investidos a 10% a.a. 🚀
+                </div>
+              </div>
+
+              <div className="flex gap-4 flex-row-reverse">
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 text-white">
+                  <Users size={16} />
+                </div>
+                <div className="bg-emerald-600 p-4 rounded-2xl rounded-tr-none text-white text-sm leading-relaxed shadow-lg shadow-emerald-900/20">
+                  Uau! Não tinha percebido. Pode criar uma meta de redução pra gente?
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0 text-emerald-400">
+                  <Bot size={16} />
+                </div>
+                <div className="bg-white/5 p-4 rounded-2xl rounded-tl-none text-gray-300 text-sm leading-relaxed border border-white/5 flex gap-2 items-center">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" />
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce delay-75" />
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce delay-150" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
 const CTA = () => (
   <section className="py-32 relative overflow-hidden bg-emerald-900/20">
     <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-transparent to-[#0A0A0A]" />
